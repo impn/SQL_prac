@@ -183,19 +183,46 @@ SELECT * FROM employees WHERE hiredate = STR_TO_DATE('1992-04#3','%Y-%m#%D');
 
 # 6. data_format 将日期转换成字符串
 
+SELECT DATE_FORMAT('1993-1-04','%Y年%c月%d日');
+-- 年 %Y %y
+-- 月 %m %c
+-- 日 %D %d
 
+# 四、其他函数
 
+SELECT VERSION() AS 版本,DATABASE() AS 数据库, USER() AS 用户;
 
+# 五、流程控制函数
+# 1.if 函数： if else
 
+SELECT IF(20>10,'大','小') AS '20大于10吗';
 
+# 判断是否有奖金
+SELECT last_name,commission_pct,IF(commission_pct IS NULL,'没奖金','有奖金') AS 年终奖
+FROM employees;
 
+# switch(变量或者表达式)
 
+-- CASE 要判断的表达式 
+-- WHEN 常量1 THEN 要执行的语句1
+-- WHEN 常量2 THEN 要执行的语句2
+-- WHEN 常量3 THEN 要执行的语句3
+-- WHEN 常量4 THEN 要执行的语句4
+-- ...
+-- ELSE 要显示的语句
+-- end
 
+/*案例 查询员工的工资 要求：如果部门的
+部门号=30，显示的工资为1.1倍
+部门号=40，显示的工资为1.2倍
+部门号=50，显示的工资为1.3倍
+其他部门，显示的工资为原工资
+*/
 
+SELECT salary AS 原始工资, last_name,employees;
 
-
-
-
+CASE department_id 
+WHEN 30 THEN salary*1.1 
 
 
 

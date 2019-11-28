@@ -396,6 +396,16 @@ select分组函数，列（要求出现在group by的后面）from表
 group by分组的列表【order by 子句】
 注意：
 查询列表必须特殊，要求是分组函数和group by后出现的字段
+特点：
+1、分组查询中的筛选条件分为两类
+		数据源		位置			关键字		
+分组前筛选	原始表		group by子句的前面 	where
+分组后筛选	分组后的结果集	group by子句的后面	having
+
+①分组函数做条件肯定是放在having子句中
+②能用分组前筛选的，就优先考虑使用分组前筛选
+2、group by子句支持单个字段分组，多个字段分组（多个字段之间用逗号隔开没有顺序要求），表达式或函数（用得较少）
+3、也可以添加排序（排序放在整个分组查询的最后）
 */
 # 引入：查询每个部门的平均工资
 SELECT AVG(salary) FROM employees;
@@ -435,6 +445,54 @@ SELECT COUNT(employee_id) AS 人数,department_id
 FROM employees
 GROUP BY department_id
 HAVING 人数>2;
+
+#案例2：查询每个工种有奖金的员工的最高工资>12000的工种编号和最高工资
+#①查询每个工种有奖金的员工的最高工资
+#②根据①结果继续筛选，最高工资>12000
+SELECT MAX(salary) AS 最高工资,job_id AS 工种编号
+FROM employees
+WHERE commission_pct IS NOT NULL
+GROUP BY job_id
+HAVING 最高工资>12000;
+
+#案例3：查询领导编号>102的每个领导手下的最低工资>5000的领导编号是哪个，以及其最低工资
+#①查询查询领导编号>102的每个领导手下的员工固定最低工资
+#②添加筛选条件：编号>102
+#③添加筛选条件：最低工资>5000
+
+SELECT manager_id,MIN(salary) AS min_sal
+FROM employees
+WHERE manager_id>102
+GROUP BY manager_id
+HAVING min_sal>5000
+
+#按表达式或函数分组
+#案例：按员工姓名的长度分组，查询每一组的员工个数，筛选员工个数>5的有哪些
+#①查询每个长度的员工个数
+
+SELECT COUNT(1) AS 员工个数,LENGTH(last_name) AS 姓名长度
+FROM employees
+GROUP BY 姓名长度
+HAVING 员工个数>5
+
+#按多个字段分组
+#案例：查询每个部门每个工种的员工的平均工资
+
+SELECT AVG(salary) AS avg_sal,department_id,job_id
+FROM employees
+GROUP BY department_id,job_id;
+
+#添加排序
+#案例：查询每个部门每个工种的员工的平均工资，并且按平均工资的高低显示,显示平均薪资高于10000的部门id和工种id
+
+SELECT AVG(salary) AS avg_sal,department_id,job_id
+FROM employees
+WHERE department_id IS NOT NULL
+GROUP BY department_id,job_id
+HAVING avg_sal>10000
+ORDER BY avg_sal DESC;
+
+
 
 
 

@@ -252,7 +252,7 @@ FROM employees;
 #练习
 #1.显示系统时间（注：日期+时间）
 SELECT NOW();
-I
+
 #2.查询员工号，姓名，工资，以及工资提高百分之20后的结果（new salary）
 SELECT employee_id,last_name,salary,salary*1.2 AS 'new salary'
 FROM employees;
@@ -261,8 +261,6 @@ FROM employees;
 SELECT last_name,LENGTH(last_name) AS name_length
 FROM employees
 ORDER BY SUBSTR(last_name,1,1);
-
-
 
 # 4.做一个查询，产生下面的结果
 /*
@@ -274,23 +272,169 @@ jobgradeAD PRESA ST MANB C
 SELECT CONCAT(last_name,' earns ',salary,' monthly but wants ',salary*3) AS 'Dream Salary'
 FROM employees
 WHERE salary=24000;
+#5.使用case-when，按照下面的条件：
+/* job	grade
+   AD_PRES  A
+   ST_MAN   B
+   IT_PROG  C 
+   SA_REP   D 
+   ST_CLERK E
+产生下面的结果
+Last_name Job_id Grade
+king 	AD_PRES    A
+*/
 
+SELECT last_name,job_id AS job,
+CASE job_id
+WHEN 'AD_PRES' THEN 'A'
+WHEN 'ST_MAN' THEN 'B'
+WHEN 'IT_PROG' THEN 'C'
+WHEN 'SA_PRE' THEN 'D'
+WHEN 'ST_CLERK' THEN 'E'
+END AS Grade
+FROM employees
+WHERE job_id='AD_PRES';
 
+#二、分组函数
+/*
+功能：用作统计使用，又称为聚合函数或统计函数或组函数分类：
+sum 求和、avg平均值、max最大值、min最小值、count计算个数
 
+特点：
+1、sum、avg一般用于处理数值型
+max、min、count可以处理任何类型
+2、以上分组函数都忽略nul1值
+3、可以和distinct搭配实现去重的运算
+4、count函数的单独介绍
+一般使用count（*）用作统计行数
+5、和分组函数一同查询的字段要求是group by后的字段
+*/
+# 1.简单的使用
 
+SELECT 
+	COUNT(100),
+	SUM(100) ,
+	SUM(salary),
+	MIN(salary) AS '最低薪资',
+	MAX(salary) AS '最高薪资',
+	AVG(salary) AS '平均薪资'
+FROM
+	employees;
+	
+# 2.参数支持哪些类型
+SELECT SUM(last_name),AVG(last_name)FROM employees;
 
+SELECT SUM(hiredate),AVG(hiredate)FROM employees;
 
+SELECT MAX(last_name),MIN(last_name) FROM employees;
+SELECT MAX(hiredate),MIN(hiredate) FROM employees;
+SELECT COUNT(last_name) FROM employees;
 
+SELECT COUNT(1) AS '没有奖金' FROM employees
+WHERE commission_pct IS NULL;
 
+SELECT COUNT(1) AS '有奖金'FROM employees
+WHERE commission_pct IS NOT NULL;
 
+#3. 是否忽略null值
+SELECT SUM(commission_pct),AVG(commission_pct),
+SUM(commission_pct)/35 AS '对比1',
+SUM(commission_pct)/72 AS '对比2'
+FROM employees; -- null值没有参与avg运算
 
+#4. 和distinct搭配
+SELECT SUM(DISTINCT salary) ,SUM(salary) FROM employees;
 
+SELECT COUNT(DISTINCT salary)FROM employees; -- 有多少种工资
 
+#5. count函数的详细介绍
+SELECT COUNT(salary) FROM employees;
 
+SELECT COUNT(*) FROM employees;
+SELECT COUNT(1) FROM employees;
+# 效率：
+# MYISAM存储引擎下 count(*)效率更高
+# INNOBD存储引擎下 count(1)效率更高
 
+# 一般使用count(*)统计行数
 
+#6. 和分组函数异同查询的字段有限制
 
+SELECT AVG(salary),employee_id FROM employees;
 
+  
+/*
+测试
+1.查询公司员工工资的最大值，最小值，平均值，总和。
+2.查询员工表中的最大入职时间和最小入职时间的相差天数
+（DIFFRENCE）
+3.查询部门编号为90的员工个数。
+*/
+-- 1.
+SELECT 
+	MAX(salary) AS '最大值',
+	MIN(salary) AS '最小值',
+	AVG(salary) AS '平均值',
+	SUM(salary) AS '总和'
+FROM 
+	employees;
+-- 2.
+SELECT 	MAX(hiredate) AS '最晚入职时间',
+	MIN(hiredate) AS '最早入职时间',
+	DATEDIFF(MAX(hiredate),MIN(hiredate)) AS DATEDIFF
+FROM
+	employees;
+-- 3.
+SELECT COUNT(1) FROM employees WHERE department_id = 90;
+
+# 进阶5. 分组查询
+
+/*
+语法：
+select分组函数，列（要求出现在group by的后面）from表
+【where 筛选条件】
+group by分组的列表【order by 子句】
+注意：
+查询列表必须特殊，要求是分组函数和group by后出现的字段
+*/
+# 引入：查询每个部门的平均工资
+SELECT AVG(salary) FROM employees;
+
+#案例1 查询每个工种的最高工资
+
+SELECT MAX(salary),job_id
+FROM employees
+GROUP BY job_id;
+
+# 案例2 查询每个位置上的部门个数
+
+SELECT COUNT(1),location_id
+FROM departments
+GROUP BY location_id;
+
+# 添加筛选条件
+# 案例1 查询邮箱中包含a字符的，每个部门的平均工资
+
+SELECT AVG(salary),department_id
+FROM employees
+WHERE email LIKE '%a%'
+GROUP BY department_id;
+
+#案例2 查询有奖金的每个领导手下员工的最高工资
+
+SELECT MAX(salary),manager_id
+FROM employees
+WHERE commission_pct IS NOT NULL
+GROUP BY manager_id;
+
+#添加复杂的筛选条件
+#案例1：查询哪个部门的员工个数>2
+
+-- where是对分组之前的条件进行筛选,HAVING是对分组之后的值进行筛选
+SELECT COUNT(employee_id) AS 人数,department_id
+FROM employees
+GROUP BY department_id
+HAVING 人数>2;
 
 
 

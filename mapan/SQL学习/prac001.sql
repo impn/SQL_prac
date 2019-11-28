@@ -201,7 +201,7 @@ SELECT IF(20>10,'大','小') AS '20大于10吗';
 SELECT last_name,commission_pct,IF(commission_pct IS NULL,'没奖金','有奖金') AS 年终奖
 FROM employees;
 
-# switch(变量或者表达式)
+# 类似switch(变量或者表达式)
 
 -- CASE 要判断的表达式 
 -- WHEN 常量1 THEN 要执行的语句1
@@ -219,20 +219,61 @@ FROM employees;
 其他部门，显示的工资为原工资
 */
 
-SELECT salary AS 原始工资, last_name,employees;
-
+SELECT salary AS 原始工资,last_name,department_id,
 CASE department_id 
 WHEN 30 THEN salary*1.1 
+WHEN 40 THEN salary*1.2
+WHEN 50 THEN salary*1.3
+ELSE salary
+END AS 新工资
+FROM employees;
+
+# 3.case 函数的使用 类似多重if
+-- 实现上个例子
+SELECT salary AS 原始工资,last_name,department_id,
+CASE  
+WHEN department_id=30 THEN salary*1.1 
+WHEN department_id=40 THEN salary*1.2
+WHEN department_id=50 THEN salary*1.3
+ELSE salary
+END AS 新工资
+FROM employees;
+
+-- 类似多重if 从上往下判断，如果有符合的，就跳出判断给出结果
+SELECT last_name,department_id,salary,
+CASE 
+WHEN salary>20000 THEN 'A'
+WHEN salary>15000 THEN 'B'
+WHEN salary>10000 THEN 'C'
+ELSE 'D'
+END AS 薪资级别
+FROM employees; 
+
+#练习
+#1.显示系统时间（注：日期+时间）
+SELECT NOW();
+I
+#2.查询员工号，姓名，工资，以及工资提高百分之20后的结果（new salary）
+SELECT employee_id,last_name,salary,salary*1.2 AS 'new salary'
+FROM employees;
+
+#3.将员工的姓名按首字母排序，并写出姓名的长度（LENGTH）
+SELECT last_name,LENGTH(last_name) AS name_length
+FROM employees
+ORDER BY SUBSTR(last_name,1,1);
 
 
 
-
-
-
-
-
-
-
+# 4.做一个查询，产生下面的结果
+/*
+<last name>earns <salary>monthly but wants <salary*3>
+Dream Salary 
+King earns 24000 monthly but wants 720005.使用CASE-WHEN，按照下面的条件：
+jobgradeAD PRESA ST MANB C
+*/
+SELECT CONCAT(last_name,' earns ',salary,' monthly but wants ',salary*3) AS 'Dream Salary'
+FROM employees
+WHERE salary=24000;
 
 
 

@@ -491,6 +491,109 @@ WHERE department_id IS NOT NULL
 GROUP BY department_id,job_id
 HAVING avg_sal>10000
 ORDER BY avg_sal DESC;
+-- 练习
+#1. 查询各job_id的员工工资的最大值，最小值，平均值，总和，并按job_id升序
+#2. 查询员工最高工资和最低工资的差距（DIFFERENCE）
+#3. 查询各个管理者手下员工的最低工资，其中最低工资不能低于6000，没有管理者的员工不计算在内
+#4. 查询所有部门的编号，员工数量和工资平均值，并按平均工资降序
+#5. 选择具有各个job_id的员工人数
+
+-- 1.
+SELECT MAX(salary) AS max_asl,MIN(salary) AS min_sal,AVG(salary) AS avg_sal,SUM(salary) AS sum_sal,job_id
+FROM employees
+GROUP BY job_id
+ORDER BY job_id;
+
+-- 2.
+SELECT MAX(salary) AS max_asl,MIN(salary) AS min_sal, MAX(salary)-MIN(salary) AS DIFFERENCE
+FROM employees
+
+-- 3.
+SELECT MIN(salary) AS min_sal,manager_id
+FROM employees
+WHERE manager_id IS NOT NULL
+GROUP BY manager_id
+HAVING min_sal>=6000;
+
+-- 4.
+SELECT department_id,COUNT(1) AS sum_emp,AVG(salary) AS avg_sal
+FROM employees
+GROUP BY department_id
+ORDER BY avg_sal DESC;
+
+-- 5.
+SELECT COUNT(1) AS sum_emp,job_id
+FROM employees
+GROUP BY job_id;
+
+# 进阶6：连接查询
+#进阶6：连接查询
+/*
+含义：又称多表查询，当查询的字段来自于多个表时，就会用到连接查询
+笛卡尔乘积现象：表1有m行，表2有n行，结果=m*n行
+发生原因：没有有效的连接条件如何避免：添加有效的连接条件
+
+分类：
+	按年代分类：
+		sq192标准: 仅仅支持内连接
+		sq199标准【推荐】: 支持内连接+外连接（左外和右外）+交叉连接
+
+	按功能分类：
+		内连接：
+			等值连接
+			非等值连接
+			自连接
+		外连接：
+			左外连接
+			右外连接
+			全外连接
+		交叉连摸
+*/
+SELECT * FROM beauty;
+SELECT * FROM boys;
+
+#一、sq192标准
+#1、等值连接
+#案例1：查询女神名和对应的男神名 发生笛卡尔积
+SELECT NAME,boyname FROM boys,beauty
+WHERE beauty.boyfriend_id=boys.id;
+
+#案例2：查询员工名和对应的部门名
+SELECT a.last_name,b.department_name
+FROM employees AS a,departments AS b
+WHERE a.department_id=b.department_id;
+
+#2、为表起别名
+/*
+①提高语句的简洁度
+②区分多个重名的字段
+注意：如果为表起了别名，则查询的字段就不能使用原来的表名去限定
+*/
+#查询员工名、工种号、工种名
+SELECT a.last_name,a.job_id,b.job_title
+FROM employees AS a,jobs AS b
+WHERE a.job_id=b.job_id;
+
+#3、两个表的顺序是否可以调换
+#查询员工名、工种号、工种名
+SELECT a.last_name,a.job_id,b.job_title
+FROM employees AS a,jobs AS b
+WHERE b.job_id=a.job_id;
+
+#4、可以加筛选？
+#案例：查询有奖金的员工名、部门名
+
+SELECT last_name ,department_name,commission_pct
+FROM employees AS e,departments AS d
+WHERE e.department_id=d.department_id AND e.commission_pct IS NOT NULL;
+
+
+
+
+
+
+
+
 
 
 

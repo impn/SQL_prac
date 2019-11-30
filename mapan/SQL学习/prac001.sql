@@ -717,10 +717,9 @@ AND	r.studentNo=s.id;
 -- 5.
 SELECT REPLACE(SUBSTR(TRIM(NOW()),1,10),'-','/') AS today;
 
-
-
 SELECT RAND();
 
+-- 邀请灵敏加入 测试
 
 
 

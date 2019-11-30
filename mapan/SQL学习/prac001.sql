@@ -650,3 +650,79 @@ WHERE
 	e.department_id=d.department_id
 AND 
 	d.location_id=l.location_id;
+	
+#2、非等值连接
+#案例1：查询员工的工资和工资级别
+SELECT 	last_name,salary AS 薪资水平 ,grade_level AS 薪资级别
+FROM employees,job_grades
+WHERE salary BETWEEN lowest_sal AND highest_sal;
+
+
+#3、自连接
+#案例：查询员工名和上级的名称
+
+SELECT 
+	e1.employee_id AS emp_id,
+	e1.last_name AS emp_name,
+	e2.employee_id AS leader_id,
+	e2.last_name AS leader_name
+FROM 
+	employees AS e1,
+	employees AS e2
+WHERE 
+	e1.manager_id=e2.employee_id;
+/*
+一、显示员工表的最大工资，工资平均值
+
+二、查询员工表的employee_id，job_id，last_name，按department_id降序，salary升序
+
+三、查询员工表的job_id中包含a和e的，并且a在e的前面
+
+四、已知表 student，里面有id（学号），name，gradeId（年级编号）
+已知表grade，里面有id（年级编号），name（年级名）
+已知resuit，里面有id，score，studentNo（学号）
+要求查询姓名、年级名、成绩
+
+五、显示当前日期，以及去前后空格，截取子字符串的函数
+*/
+-- 1.
+SELECT MAX(salary) AS max_sal,AVG(salary)AS avg_sal
+FROM employees;
+
+-- 2.
+SELECT employee_id,job_id,last_name -- ,department_id,salary
+FROM employees
+ORDER BY department_id DESC, salary;
+
+-- 3.
+SELECT *
+FROM employees
+WHERE job_id LIKE '%a%e%';
+
+-- 4.
+SELECT 
+	s.student,
+	g.name,
+	r.score
+FROM
+	student s,
+	grade g,
+	result r
+WHERE 
+	s.gradeId=g.id
+AND	r.studentNo=s.id;
+
+-- 5.
+SELECT REPLACE(SUBSTR(TRIM(NOW()),1,10),'-','/') AS today;
+
+
+
+
+
+
+
+
+
+
+
+

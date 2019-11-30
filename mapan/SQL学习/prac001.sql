@@ -191,6 +191,8 @@ SELECT DATE_FORMAT('1993-1-04','%Y年%c月%d日');
 # 四、其他函数
 
 SELECT VERSION() AS 版本,DATABASE() AS 数据库, USER() AS 用户;
+PASSWORD('字符') 	-- ：返回该字符的密码形式
+MD5('字符') 		-- ：返回该字md5加密形式
 
 # 五、流程控制函数
 # 1.if 函数： if else
@@ -717,7 +719,7 @@ SELECT REPLACE(SUBSTR(TRIM(NOW()),1,10),'-','/') AS today;
 
 
 
-
+SELECT RAND();
 
 
 

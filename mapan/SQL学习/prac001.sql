@@ -554,6 +554,14 @@ SELECT * FROM boys;
 
 #一、sq192标准
 #1、等值连接
+/*
+①多表等值连接的结果为多表的交集部分
+②n表连接，至少需要n-1个连接条件
+③多表的顺序没有要求
+④一般需要为表起别名
+⑤可以搭配前面介绍的所有子句使用，比如排序、分组、筛选
+*/
+
 #案例1：查询女神名和对应的男神名 发生笛卡尔积
 SELECT NAME,boyname FROM boys,beauty
 WHERE beauty.boyfriend_id=boys.id;
@@ -587,19 +595,58 @@ SELECT last_name ,department_name,commission_pct
 FROM employees AS e,departments AS d
 WHERE e.department_id=d.department_id AND e.commission_pct IS NOT NULL;
 
+#5、可以加分组？
+#案例1：查询每个城市的部门个数
 
+SELECT COUNT(department_id) 个数,d.location_id,city
+FROM departments d,locations l
+WHERE d.location_id=l.location_id
+GROUP BY city;
 
+#案例2：查询有奖金的每个部门的部门名和部门的领导编号 --和该部门的最低工资
 
+SELECT 
+	d.department_name,
+	d.manager_id
+FROM 
+	employees e,
+	departments d
+WHERE 
+	e.department_id=d.department_id
+AND 
+	commission_pct IS NOT NULL
+GROUP BY 
+	d.department_name,
+	d.manager_id;
+	
+#6、可以加排序
+#案例：查询每个工种的工种名和员工的个数，并且按员工个数降序
 
+SELECT job_title,COUNT(employee_id) AS count_emp
+FROM employees e,jobs j
+WHERE e.job_id=j.job_id
+GROUP BY j.job_title
+ORDER BY count_emp DESC;
 
+# 写法2：
+SELECT job_title,COUNT(employee_id) AS count_emp
+FROM employees e,jobs j
+WHERE e.job_id=j.job_id
+GROUP BY j.job_id
+ORDER BY count_emp DESC;
 
-
-
-
-
-
-
-
-
-
-
+#7、可以实现三表连接？
+#案例：查询员工名、部门名和所在的城市
+ 
+SELECT 
+	last_name,
+	department_name,
+	city
+FROM 
+	employees e,
+	departments d,
+	locations l
+WHERE 
+	e.department_id=d.department_id
+AND 
+	d.location_id=l.location_id;

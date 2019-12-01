@@ -719,8 +719,107 @@ SELECT REPLACE(SUBSTR(TRIM(NOW()),1,10),'-','/') AS today;
 
 SELECT RAND();
 
--- 邀请灵敏加入 测试
+--  练习 
+#1.显示所有员工的姓名，部门号和部门名称。
+SELECT 
+	last_name,
+	department_id,
+	department_
 
+
+#2.查询90号部门员工的job_id和90号部门的location_id
+SELECT
+	job_id,
+	location_id
+FROM
+	employees AS e,
+	departments AS d
+WHERE
+	e.department_id=90
+AND
+	e.department_id=d.department_id;
+#3.选择所有有奖金的员工的last_name,department_name,location_id,city
+
+SELECT 
+	e.last_name,
+	d.department_name,
+	l.location_id,
+	l.city
+FROM
+	employees AS e,
+	departments AS d,
+	locations AS l
+WHERE
+	e.department_id=d.department_id
+AND	
+	d.location_id=l.location_id
+
+#4.选择city在Toronto的员工的last name，job_id，daepartment_id，department_name
+
+SELECT
+	e.last_name,
+	e.job_id,
+	e.department_id,
+	d.department_name
+FROM
+	employees AS e,
+	departments AS d,
+	locations AS l
+WHERE
+	e.department_id=d.department_id
+AND
+	l.`location_id`=d.`location_id`
+AND
+	l.city=`Toronto`
+
+
+#5.查询每个工种、每个部门的部门名、工种名和最低工资
+SELECT
+	d.department_name,
+	j.job_title,
+	j.min_salary
+FROM
+	departments AS d,
+	jobs AS j,
+	employees AS e
+WHERE
+	e.job_id=j.job_id
+AND
+	e.department_id=d.department_id
+GROUP BY
+	j.job_id,
+	d.department_name
+
+#6.查询每个国家下的部门个数大于2的国家编号
+SELECT
+	l.country_id
+FROM
+	locations AS l,
+	departments AS d
+WHERE
+	l.location_id=d.location_id
+GROUP BY
+	d.country_id
+HAVING
+	COUNT(department_id)>2
+	
+SELECT COUNT(DISTINCT country_id) FROM locations;
+#7、选择指定员工的姓名，员工号，以及他的管理者的姓名和员工号，结果类似于下面的格式
+/*
+employees 	Emp	#manager Mgr
+kochhar 	101 	king	100
+*/
+
+SELECT
+	a.last_name AS '姓名',
+	a.employee_id AS '工号',
+	b.last_name AS '上司姓名',
+	b.employee_id AS '上司工号'
+FROM
+	employees AS a,
+	employees AS b
+WHERE
+	a.manager_id=b.employee_id
 
 
 

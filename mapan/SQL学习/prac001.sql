@@ -782,10 +782,8 @@ FROM
 	departments AS d,
 	jobs AS j,
 	employees AS e
-WHERE
-	e.job_id=j.job_id
-AND
-	e.department_id=d.department_id
+WHERE	e.job_id=j.job_id
+AND	e.department_id=d.department_id
 GROUP BY
 	j.job_id,
 	d.department_name
@@ -818,8 +816,218 @@ SELECT
 FROM
 	employees AS a,
 	employees AS b
-WHERE
-	a.manager_id=b.employee_id
+WHERE	a.manager_id=b.employee_id
+AND	a.last_name='kochhar';
+
+
+
+
+
+#二、sq199语法
+1/*
+语法：
+	select 查询列表
+	from表1别名【连接类型】
+	join表2别名
+	on连接条件
+	【where 筛选条件】
+	【group by 分组】
+	【having 筛选条件】
+	【order by 排序列表】
+分类：
+内连接（★）：inner
+外连接：
+	左外（★）：left 【outer】
+	右外（★）：right【outer】
+	全外：full【outer】
+交叉连接：cross
+*/
+
+#一）内连接
+/*
+语法：
+select 查询列表from表1别名inner join 表2别名on 连接条件；分类：等值
+非等值自连接
+特点：
+①添加排序、分组、筛选
+②inner可以省略
+③筛选条件放在where后面，连接条件放在on后面，提高分离性，便于阅读
+④inner join连接和sq192语法中的等值连接效果是一样的，都是查询多表的交集
+*/
+#1、等值连接
+#案例1.查询员工名、部门名
+
+SELECT
+	last_name,
+	department_name
+FROM 	employees e
+INNER JOIN departments d
+ON	e.department_id=d.department_id
+-- 调换顺序
+SELECT
+	last_name,
+	department_name
+FROM 	departments d
+INNER JOIN employees e
+ON	e.department_id=d.department_id
+
+#案例2.查询名字中包含e的员工名和工种名（筛选）
+
+SELECT last_name,job_title
+FROM employees e
+INNER JOIN jobs j
+ON e.job_id=j.job_id
+WHERE last_name LIKE '%e%';
+
+#3.查询部门个数>3的城市名和部门个数，（分组+筛选）
+SELECT city,COUNT(department_id)
+FROM locations AS l
+INNER JOIN departments AS d
+ON l.location_id=d.location_id
+GROUP BY city
+HAVING COUNT(department_id)>3;
+
+#4.查询哪个部门的部门员工个数>3的部门名和员工个数，并按个数降序（排序）
+SELECT 
+	COUNT(e.employee_id) AS sum_dep,
+	e.department_id,
+	d.department_name
+FROM employees e
+INNER JOIN departments d
+ON d.department_id=e.department_id
+GROUP BY e.department_id
+HAVING sum_dep>3
+ORDER BY sum_dep DESC;
+
+#5.查询员工名、部门名、工种名，并按部门名降序
+
+-- 子查询方式
+SELECT 
+	t1.last_name,
+	t1.department_name,
+	job_title
+FROM
+	(SELECT
+		last_name,
+		department_name,
+		job_id
+	FROM employees AS e
+	JOIN departments AS d
+	ON e.`department_id`=d.department_id)AS t1
+JOIN jobs AS j
+ON t1.job_id=j.job_id
+ORDER BY department_name DESC;
+
+-- 双inner join
+SELECT 
+	e.last_name,
+	d.department_name,
+	job_title
+FROM employees AS e
+INNER JOIN departments AS d
+ON e.`department_id`=d.department_id
+INNER JOIN jobs AS j
+ON j.job_id=e.job_id
+ORDER BY department_name DESC;
+
+#二）非等值连接
+#查询员工的工资级别
+
+SELECT
+	salary,
+	grade_level
+FROM employees AS e
+JOIN job_grades AS g
+ON e.salary BETWEEN g.lowest_sal AND g.highest_sal;
+
+#查询每个工资级别的人数>2的工资级别，并且按工资级别降序
+
+SELECT
+	COUNT(1) AS sum_emp,
+	grade_level
+FROM
+	employees AS e
+JOIN	job_grades AS g
+ON e.`salary` BETWEEN g.`lowest_sal` AND g.`highest_sal`
+GROUP BY grade_level
+HAVING sum_emp>20
+ORDER BY grade_level DESC;
+
+#三）自连接
+#查询姓名中包含字符k的员工的名字、上级的名字
+
+SELECT 
+	e.last_name AS '员工',
+	m.last_name AS '上级'
+FROM
+	employees AS e
+JOIN employees AS m
+ON e.manager_id=m.employee_id
+WHERE e.last_name LIKE '%k%';
+
+#二、外连接 :用于查询一个表中有，另一个表中没有的
+/*应用场景：用于查询一个表中有，另一个表没有的记录
+特点：
+    1、外连接的查询结果为主表中的所有记录
+	如果从表中有和它匹配的，则显示匹配的值
+	如果从表中没有和它匹配的，则显示null
+	外连接查询结果=内连接结果+主表中有而从表中没有的记录
+    2、左外和右外:
+	左外连接：left join左边的是主表
+	右外连接：right join右边的是主表
+    3、左外和右外交换两个表的顺序，可以实现同样的效果
+*/
+
+
+SELECT * FROM boys;
+SELECT * FROM beauty;
+
+#引入：查询没有男朋友的女神名
+SELECT 
+	b.name
+	-- bo.*
+FROM beauty AS b
+LEFT JOIN boys AS bo
+ON b.`boyfriend_id`=bo.`id`
+WHERE bo.`id` IS NULL;
+
+#案例1：查询哪个部门没有员工
+#左外
+
+SELECT 
+	d.*,
+	e.employee_id
+FROM departments AS d
+LEFT JOIN employees AS e
+ON d.department_id=e.department_id
+WHERE e.employee_id IS NULL;
+
+#一、查询编号>3的女神的男朋友信息，如果有则列出详细，如果没有，用nul1填充
+SELECT
+	b.id,
+	b.`name`,
+	bo.*
+FROM
+	beauty AS b
+LEFT JOIN boys AS bo
+ON b.`boyfriend_id`=bo.`id`
+WHERE b.`id`>3
+
+#二、查询哪个城市没有部门
+SELECT 
+	city
+FROM
+	locations AS l
+LEFT JOIN departments AS d
+ON l.
+
+#三、查询部门名为sAL或IT的员工信息
+
+
+
+
+
+
 
 
 

@@ -1015,15 +1015,32 @@ WHERE b.`id`>3
 
 #二、查询哪个城市没有部门
 SELECT 
-	city
+	city,
+	d.*
 FROM
-	locations AS l
-LEFT JOIN departments AS d
-ON l.
+	departments AS d
+RIGHT JOIN locations AS l
+ON l.location_id=d.location_id
+WHERE d.department_id IS NULL;
 
-#三、查询部门名为sAL或IT的员工信息
+#三、查询部门名为SAL或IT的员工信息
+-- 此方法有问题
+SELECT
+	e.*,
+	d.department_name
+FROM employees AS e
+JOIN departments AS d
+ON e.department_id=d.department_id
+WHERE d.department_name IN('Sal','IT');
 
-
+-- 应该以departments为主表
+SELECT 
+	e.*,
+	d.department_name
+FROM departments AS d
+LEFT JOIN employees AS e
+ON e.department_id=d.department_id
+WHERE d.department_name IN('Sal','IT');
 
 
 

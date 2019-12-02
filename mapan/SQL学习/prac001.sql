@@ -1132,14 +1132,124 @@ HAVING min_sal>(
 );
 
 
+#2.列子查询（多行子查询）
+#案例1：返回location_id是1400或1700的部门中的所有员工姓名
 
+SELECT last_name
+FROM employees AS e
+JOIN departments AS d
+ON e.department_id=d.department_id
+WHERE d.location_id IN(1400,1700);
 
+SELECT last_name
+FROM employees AS e
+WHERE department_id IN(
+	SELECT department_id
+	FROM departments
+	WHERE location_id IN (1400,1700)
+);
+#案例2：返回其它工种中比job_id为'IT_PROG'部门任一工资低的员工的员工号、姓名、job_id 以及salary
 
+SELECT
+	employee_id,
+	last_name,
+	job_id,
+	salary
+FROM employees
+WHERE salary <ANY(
+	SELECT salary
+	FROM employees
+	WHERE job_id='IT_PROG'
+)
+AND job_id<>'IT_PROG';
 
+#3、行子查询（结果集一行多列或多行多列）
+#案例：查询员工编号最小并且工资最高的员工信息
+SELECT *
+FROM employees
+WHERE (employee_id,salary)=(
+	SELECT MIN(employee_id),MAX(salary)
+	FROM employees
+)
 
+#二、select后面 仅仅支持标量子查询
+#案例：查询每个部门的员工个数
 
+SELECT d.*,(
+	SELECT COUNT(1)
+	FROM employees AS e
+	WHERE e.department_id=d.department_id
+) AS sum_emp
+FROM departments AS d
+#案例2：查询员工号=102的部门名
+SELECT (SELECT department_name
+	FROM employees AS e
+	JOIN departments AS d
+	ON e.department_id=d.department_id
+	WHERE employee_id=102
+)AS 102号员工部门名;
 
+#三、from后面
+1/*
+将子查询结果充当一张表，要求必须起别名
+*/
+#案例：查询每个部门的平均工资的工资等级
 
+SELECT
+	department_name,
+	avg_sal,
+	grade_level
+FROM(SELECT AVG(salary) AS avg_sal,
+	department_name
+	FROM employees AS e
+	LEFT JOIN departments AS d
+	ON e.department_id=d.department_id
+	GROUP BY e.department_id
+) AS sal JOIN job_grades
+ON avg_sal BETWEEN lowest_sal AND highest_sal
+
+#四、exists后面（相关子查询）
+/*
+语法：
+	exists（完整的查询语句）
+	结果：
+	1或0
+*/
+#案例1：查询有员工的部门名
+
+SELECT department_name
+FROM departments AS d
+WHERE EXISTS(
+	SELECT *
+	FROM employees AS e
+	WHERE d.department_id=e.department_id
+);
+
+#案例2：查询没有女朋友的男神信息
+
+SELECT bo.*
+FROM boys AS bo
+WHERE bo.id NOT IN(
+	SELECT boyfriend_id
+	FROM beauty
+);
+
+SELECT bo.*
+FROM boys bo
+WHERE NOT EXISTS(
+	SELECT boyfriend_id
+	FROM beauty b
+	WHERE bo.id=b.boyfriend_id
+)
+
+#练习
+/*
+1.查询和zlotkey相同部门的员工姓名和工资
+2.查询工资比公司平均工资高的员工的员工号，姓名和工资。
+3.查询各部门中工资比本部门平均工资高的员工的员工号，姓名和工资查询和姓名中包含字母u的员工在相同部门的员工的员工号和姓名5.查询在部门的location id为1700的部门工作的员工的员工号
+6.查询管理者是King的员工姓名和工资
+7.查询工资最高的员工的姓名，要求first_name和last_name显示为一列，列名为姓名。
+*/
 
 
 

@@ -1365,15 +1365,155 @@ WHERE commission_pct IS NOT NULL
 DESC salary
 LIMIT 10;
 
+/*
+已知表 stuinfo 
+id 学号
+name 姓名
+email 邮箱 john@126.com 
+gradeId 年级编号
+sex性别男女
+age 年龄
 
+已知表 grade
+id 年级编号
+gradeName 年级名称
+一、查询所有学员的邮箱的用户名（注：邮箱中@前面的字符）select substr（）
+二、查询男生和女生的个数
+三、查询年龄>18岁的所有学生的姓名和年级名称
+四、查询哪个年级的学生最小年龄>20岁
+五、试说出查询语句中涉及到的所有的关键字，以及执行先后顺序
+*/
+-- 1.
+SELECT SUBSTR(email,1,INSTR(email,'@')-1)
+FROM stuinfo
 
+-- 2.
+SELECT COUNT(1),sex
+FROM stuinfo
+GROUP BY sex
 
+-- 3.
+SELECT NAME,gradeName
+FROM stuinfo AS s
+JOIN grade AS g
+ON s.gradeId=g.id
+WHERE age>18
 
+-- 4.
+SELECT gradeName
+FROM grade AS g
+JOIN(SELECT MIN(age) AS min_age,gradeId
+	FROM stuinfo
+	GROUP BY gradeId
+	HAVING min_age>20
+) AS b
+ON g.gradeId=g.gradeId
 
+-- 5.
+SELECT 字段
+FROM 表名
+JOIN 表名
+ON 连接条件
+WHERE 过滤条件
+GROUP BY 分组条件
+HAVING 过滤条件
+ORDER BY 排序条件
+LIMIT 偏移，条目数
 
+-- 练习
+#1.查询工资最低的员工信息：last_name，salary
+SELECT
+	last_name,
+	salary
+FROM
+	employees AS e
+WHERE e.salary=(SELECT MIN(salary) FROM employees)
 
+#2.查询平均工资最低的部门信息
+SELECT *
+FROM departments AS d
+JOIN (
+	SELECT AVG(salary) AS avg_sal,
+	e.department_id
+	FROM employees AS e
+	GROUP BY department_id
+	ORDER BY avg_sal ASC
+	LIMIT 1
+) AS b
+WHERE d.department_id=b.department_id
 
+#3.查询平均工资最低的部门信息和该部门的平均工资
+-- 上题中已经做了
+#4.查询平均工资最高的job信息
 
+SELECT *
+FROM jobs AS j
+JOIN(SELECT 
+	AVG(salary) AS avg_sal,
+	job_id
+	FROM employees
+	GROUP BY job_id
+	ORDER BY avg_sal DESC
+	LIMIT 1
+)AS b ON j.job_id=b.job_id
+
+#5.查询平均工资高于公司平均工资的部门有哪些？
+SELECT * -- 求这些部门id的详细信息
+FROM departments AS d
+JOIN(SELECT 
+	department_id -- 求部门平均工资大于公司平均工资的部门id
+	FROM(SELECT -- 所有部门的平均工资
+		AVG(salary) avg_sal,
+		department_id 
+		FROM employees AS e
+		GROUP BY department_id) AS a
+	JOIN(SELECT -- 全公司的平均工资
+		AVG(salary) AS avg_sal
+		FROM employees
+	)AS b 
+	ON a.avg_sal>b.avg_sal) AS c
+ON d.department_id=c.department_id
+
+#6.查询出公司中所有manager的详细信息
+
+-- 分析 ：当自己的员工编号 等于任意一个manager_id时，就说明这个人是一个manager
+
+#7.各个部门中最高工资中最低的那个部门的最低工资是多少
+SELECT MIN(salary)
+FROM employees AS e
+JOIN(	SELECT
+		MAX(salary) AS max_sal,
+		department_id
+	FROM employees
+	GROUP BY department_id
+	ORDER BY max_sal
+	LIMIT 1
+) AS b
+ON e.department_id=b.department_id;
+
+-- 验证
+SELECT * FROM employees WHERE department_id=10
+
+#8.查询平均工资最高的部门的manager的详细信息：last_name，department_id，email，salary
+
+SELECT 
+	last_name,
+	department_id,
+	email,
+	salary
+FROM employees
+WHERE employee_id=(
+	SELECT manager_id
+	FROM departments AS d
+	JOIN (SELECT 
+			AVG(salary) AS avg_sal,
+			department_id
+		FROM employees
+		GROUP BY department_id
+		ORDER BY avg_sal DESC
+		LIMIT 1
+	)AS b ON d.department_id=b.department_id
+)
 
 
 

@@ -1576,6 +1576,47 @@ GROUP BY maiorid;
 #十一、查询没有成绩的学生人数
 
 
+#进阶9：联合查询
+/*
+union 联合合并：将多条查询语句的结果合并成一个结果语法：
+查询语句1union查询语句2union应用场景：
+要查询的结果来自于多个表，且多个表没有直接的连接关系，但查询的信息一致时
+
+
+
+#DML语言
+/*
+数据操作语言：
+插入：insert
+修改：update
+删除：delete
+*/
+#一、插入语句
+/*
+语法：
+insert into 表名(列名,...)
+values(值1,...)
+*/
+#1.插入的值的类型要与列的类型一致或者兼容
+USE girls;
+INSERT INTO beauty(id,NAME,sex,borndate,phone,photo,boyfriend_id)
+VALUES(13,'唐艺昕','女','1998-05-16','19855521122',NULL,2);
+SELECT * FROM beauty;
+#2.不可以为nul1的列必须插入值。可以为nul1的列如何插入值？
+# 方式一：
+INSERT INTO beauty(id,NAME,sex,phone,boyfriend_id)
+VALUES(14,'张宝','男',1572380923,2);
+
+#3.列的顺序是否可以调换
+INSERT INTO beauty(NAME,sex,id，phone)
+VALUES('蒋欣’,’女’,16,'110);
+#4.列数和值的个数必须一致
+INSERT INTO beauty（NAME,sex,id,phone)
+VALUES('关晓彤’,’女’,17,'110);
+
+
+
+
 
 
 

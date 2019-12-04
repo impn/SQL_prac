@@ -1433,7 +1433,7 @@ WHERE e.salary=(SELECT MIN(salary) FROM employees)
 SELECT *
 FROM departments AS d
 JOIN (
-	SELECT AVG(salary) AS avg_sal,
+	SELECT AVG(salary) AS avg_sal, -- 查平均工资最低的部门编号和最低平均工资
 	e.department_id
 	FROM employees AS e
 	GROUP BY department_id
@@ -1475,8 +1475,22 @@ JOIN(SELECT
 ON d.department_id=c.department_id
 
 #6.查询出公司中所有manager的详细信息
+-- 从部门表的角度（错）
+SELECT * FROM employees AS e
+JOIN(SELECT department_name,
+	manager_id AS man_id
+	FROM departments
+	WHERE manager_id IS NOT NULL
+	GROUP BY department_id
+) AS b
+ON e.employee_id=b.man_id;
 
--- 分析 ：当自己的员工编号 等于任意一个manager_id时，就说明这个人是一个manager
+-- 从员工角度（正确答案）
+SELECT * 
+FROM (SELECT DISTINCT manager_id FROM employees) AS e1,employees AS e2
+WHERE e1.manager_id=e2.employee_id;
+
+SELECT * FROM departments;
 
 #7.各个部门中最高工资中最低的那个部门的最低工资是多少
 SELECT MIN(salary)
@@ -1514,6 +1528,62 @@ WHERE employee_id=(
 		LIMIT 1
 	)AS b ON d.department_id=b.department_id
 )
+
+#一、查询每个专业的学生人数
+SELECT majorid,COUNT(10
+FROM student
+GROUP majorid;
+
+#二、查询参加考试的学生中，每个学生的平均分、最高分
+SELECT AVG(score),MAX(score),studentno
+FROM result
+GROUP BY studentno;
+#三、查询姓张的每个学生的最低分大于60的学号、姓名
+
+SELECT studentno,studentname,MIN(score)
+FROM student AS s
+JOIN result AS r
+ON s.studentno=r.studentno
+WHERE s.studentname LIKE '张%'
+GROUP BY s.studentno
+HAVING MIN(score)>60
+
+#四、查询每个专业生日在1988-1-1”后的学生姓名、专业名称
+SELECT studentname, majorname 
+FROM student s 
+JOIN major m 
+ON s. majorid=m. majorid 
+WHERE DATEDIFF(borndate,'1988-1-1')>0;
+
+#五、查询每个专业的男生人数和女生人数分别是多少
+SELECT COUNT（*）个数,sex,majorid 
+FROM student 
+GROUP BY sex,majorid;
+
+方式二：
+SELECT 
+	majorid,
+	(SELECT COUNT(*)FROM student WHERE sex='男)男,
+	(SELECT COUNE(*)FROM student WHERE sex='女’)女
+FROM student 
+GROUP BY maiorid;
+-- 没有sql和表结构 暂时不做
+#六、查询专业和张翠山一样的学生的最低分
+#七、查询大于60分的学生的姓名、密码、专业名
+#八、按邮箱位数分组，查询每组的学生个数
+#九、查询学生名、专业名、分数
+#十、查询哪个专业没有学生，分别用左连接和右连接实现
+#十一、查询没有成绩的学生人数
+
+
+
+
+
+
+
+
+
+
 
 
 

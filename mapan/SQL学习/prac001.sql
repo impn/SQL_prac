@@ -1811,6 +1811,50 @@ SELECT * FROM my_employees;
 TRUNCATE users;
 TRUNCATE my_employees;
 
+#DDL
+/*
+数据定义语言
+库和表的管理
+一、库的管理
+创建、修改、删除
+二、表的管理
+创建、修改、删除
+创建：create
+修改：alter
+删除：drop
+*/
+#一、库的管理
+#1、库的创建
+/*
+语法：
+create database库名；
+*/
+#案例：建库Books
+
+CREATE DATABASE books;
+
+CREATE DATABASE IF NOT EXISTS books;
+
+CREATE TABLE IF NOT EXISTS books.novel(NO VARCHAR(20),id VARCHAR(20));
+
+# 2.库的修改
+RENAME DATABASE books TO book; -- 已经废弃的语法
+
+# 更改库的字符集
+ALTER DATABASE bookS CHARACTER SET utf8mb4;
+
+#3、库的删除
+DROP DATABASE books;
+
+DROP DATABASE IF EXISTS books;
+
+
+
+
+
+
+
+
 
 
 

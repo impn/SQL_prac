@@ -1614,6 +1614,74 @@ VALUES('蒋欣’,’女’,16,'110);
 INSERT INTO beauty（NAME,sex,id,phone)
 VALUES('关晓彤’,’女’,17,'110);
 
+#5.可以省略列名，默认所有列，而且列的顺序和表中列的顺序一致
+INSERT INTO beauty VALUES(18,'张飞','男',NULL,'119',NULL,NULL);
+
+#方式二：
+/*
+语法：
+insert into表名set列名=值，列名=值，..
+*/
+
+INSERT INTO beauty
+SET id=19,NAME='刘涛',phone='999';
+
+#两种方式大pk
+#1、方式一支持插入多行,支持子查询
+
+INSERT INTO beauty VALUES(15,'唐棒昕','女','1990-4-23','1898888888',NULL,2)
+,(17,'唐二昕','女','1990-5-21','18988588881',NULL,2)
+,(16,'唐三昕','女','1990-6-23','18988838881',NULL,2);
+
+# 2、方式一支持子查询，方式二不支持
+INSERT INTO beauty(id,NAME,phone)
+SELECT 26,'宋茜','118098661';
+
+INSERT INTO beauty(id,NAME,phone)
+SELECT id+20,boyname,'1235443'
+FROM boys
+WHERE id<3
+/*
+
+1.修改单表的记录★
+语法：
+	update 表名
+	set列=新值，列=新值，..
+	where筛选条件；
+2.修改多表的记录【补充】
+语法：
+sq192语法：
+update 表1 别名，表2别名
+set列=值，...
+where 连接条件
+and 筛选条件；
+
+sq199语法：
+update 表1 别名
+inner | left | right 
+join表2 别名
+on 连接条件
+set 列=值...
+where 筛选条件；
+*/
+#1.修改单表的记录
+#案例1：修改beauty表电姓唐的女神的电话为138998
+
+UPDATE beauty SET phone='138998888'
+WHERE NAME LIKE '唐%';
+#案例2：修改boys表中id好为2的名称为张飞，魅力值10
+USE girls;
+UPDATE boys SET boyname='张飞',usercp=10
+WHERE id=2;
+#2.修改多表的记录
+#案例1：修改张无忌的女朋友的手机号为114
+UPDATE boys AS bo
+JOIN beauty AS b
+ON bo.id=b.`boyfriend_id`
+SET b.`phone`='1000'
+WHERE bo.`boyName`='张无忌';
+
+
 
 
 

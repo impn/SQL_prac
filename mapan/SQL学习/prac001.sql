@@ -1682,18 +1682,134 @@ SET b.`phone`='1000'
 WHERE bo.`boyName`='张无忌';
 
 
+#三、删除语句
+/*
+方式一：delete语法：
+语法：
+1、单表的删除【★】
+delete from 表名 where筛选条件
+2、多表的删除【补充】
+delete from 表名 where筛选条件2、多表的删除【补充】
+
+方式二：truncate语法：truncate table表名；
+*/
+#方式一：delete
+#1.单表的删除
+#案例1：删除手机号以9结尾的女神信息
+DELETE FROM beauty WHERE phone LIKE '%9';
+
+# 2. 多表的删除(补充)
+/*
+sq192语法：
+delete表1的别名，表2的别名from表1别名，表2别名where连接条件and筛选条件；
+*/
+
+#案例： 删除张无忌的的女朋友的信息
+DELETE bo
+FROM beauty b
+JOIN boys AS bo
+ON b.`boyfriend_id`=bo.`id`
+WHERE bo.`boyName`='张无忌';
+
+SELECT *
+FROM beauty b
+JOIN boys AS bo 
+ON b.`boyfriend_id`=bo.`id`
+WHERE bo.`boyName`='张无忌';
+
+#案例：删除黄晓明的信息以及他女朋友的信息
+
+DELETE b,bo
+FROM beauty b
+JOIN boys bo
+ON b.`boyfriend_id`=bo.`id`
+WHERE bo.`boyName`='黄晓明';
 
 
+SELECT *
+FROM beauty b
+JOIN boys bo
+ON b.`boyfriend_id`=bo.`id`
+WHERE bo.`boyName`='黄晓明';
+
+#方式二：truncate语句
+#案例：将魅力值>100的男神信息删除
+
+TRUNCATE TABLE boys WHERE usercp>100:
+
+--  语句允许添加 where条件
+
+-- 删除表中的全部数据的时候使用
+
+#delete pk truncate【面试题】
+/*
+1.delete 可以加where条件，truncate不能加
+2.truncate删除，效率高一丢丢
+3.假如要删除的表中有自增长列，如果用delete删除后，再插入数据，自增长列的值从断点开始，而truncate删除后，再插入数据，自增均列的值从1 开始
+4.truncate除没有返回值，delete删除有返回值！
+5.truncate删除不能回滚，delete删除可以回滚.
+*/
 
 
+-- 1.运行以下脚本创建表my_employees
+CREATE TABLE my_employees(
+Id INT(10), First_name VARCHAR(10), Last_name VARCHAR(10), Userid VARCHAR(10), Salary DOUBLE(10,2) 
+)
+
+CREATE TABLE users(
+id INT, userid VARCHAR(10), department_id INT )
+
+-- 2.显示表my_employees的结构
+DESC my_employees;
+
+-- 3.向my employees表中插入下列数据
+INSERT INTO my_employees
+VALUE(1,'patel','Ralph','Rpatel',895),
+(2,'Dancs','Betty','Bdancs' ,860),
+(3,'Biri','Ben','Bbiri',1100),
+(4,'Newman','Chad','Cnewman',750),
+(5,'Ropeburn','Audrey','Aropebur',1550);
+
+SELECT * FROM my_employees;
 
 
+SELECT * FROM  users;
+DESC users;
+-- 4.向users表中插入数据
+INSERT INTO users
+VALUE(1,'Rpatel',10),
+(2,'Bdancs',10),
+(3,'Bbiri',20),
+(4,'Cnewman',30),
+(5,'Aropebur',40);
 
+-- 5.将3号员工的last name修改为“drelxer”
+UPDATE my_employees
+SET last_name='drelxer'
+WHERE id=3
 
+-- 6.将所有工资少于900的员工的工资修改为1000
+UPDATE employees
+SET salary=1000
+WHERE Salary<900;
 
+-- 7.将userid为Bbiri的user表和my_employees表的记录全部删除
+DELETE u,m
+FROM users AS u JOIN my_employees AS m
+ON m.userid=u.userid
+WHERE m.userid='Bbiri';
 
+-- 8.删除所有数据
+DELETE FROM users;
+DELETE FROM my_employees;
 
+-- 9.检查所作的修正
+SELECT * FROM users;
+SELECT * FROM my_employees;
 
+-- 10.清空表my_employees
+TRUNCATE users;
+TRUNCATE my_employees;
 
 
 

@@ -1847,11 +1847,33 @@ ALTER DATABASE bookS CHARACTER SET utf8mb4;
 DROP DATABASE books;
 
 DROP DATABASE IF EXISTS books;
+#二、表的管理
+#1.表的创建★
 
+/*
+语法：
+create table表名（
+	列名列的类型【（长度）约束】，
+	列名列的类型【（长度）约束】，
+	列名列的类型【（长度）约束】，
+	列名列的类型【（长度）约束】
+）
+*/
+CREATE TABLE book(
+	id INT, -- 编号
+	bName VARCHAR(20), -- 图书名
+	price DOUBLE, -- 价格
+	authorId INT, -- 作者
+	publishDate DATETIME -- 出版日期
+);
 
+CREATE TABLE author(
+	id INT,
+	au_name VARCHAR(20),
+	nation VARCHAR(10)
+);
 
-
-
+DESC author;
 
 
 

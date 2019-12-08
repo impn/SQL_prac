@@ -1915,7 +1915,7 @@ INSERT INTO  books.author VALUES
 SELECT * FROM author;
 DESC author;
 
-# 1.仅仅赋值表的结构
+# 1.仅仅复制表的结构
 CREATE TABLE copy1 LIKE author;
 
 SHOW TABLES;
@@ -1929,21 +1929,56 @@ SELECT * FROM copy2;
 CREATE TABLE copy3 SELECT id,au_name FROM author;
 SELECT * FROM copy3;
 
+# 4.仅仅复制部分表结构
 
+CREATE TABLE copy4 SELECT au_name,annual FROM author WHERE 1=0; -- 或者where 0
+SELECT * FROM copy4;
 
+# 测试
+-- 1.创建表dept1
+DROP TABLE IF EXISTS dept1;
+CREATE TABLE IF NOT EXISTS dept1(id INT(7),NAME VARCHAR(25));
+USE books;
+SHOW TABLES;
 
+-- 2.将表departments中的数据插入新表dept2中
+CREATE TABLE IF NOT EXISTS dept2 LIKE myemployees.departments;
+INSERT INTO dept2 SELECT * FROM myemployees.departments;
 
+SELECT * FROM dept2;
 
+-- 3.创建表emp5
+CREATE TABLE IF NOT EXISTS emp5(
+	id INT(7),
+	First_name VARCHAR(25),
+	Last_name VARCHAR(25),
+	Dept_id INT(7)
+);
 
+-- 4.将Last_name的长度增加到50
+ALTER TABLE emp5 MODIFY COLUMN Last_name VARCHAR(50);
 
+DESC emp5;
 
+-- 5.根据表employees创建employees2
+SHOW TABLES;
+CREATE TABLE IF NOT EXISTS employees2 LIKE myemployees.employees;
+INSERT INTO employees2
+SELECT * FROM myemployees.employees;
 
+-- 6.删除表emp5
+DROP TABLE IF EXISTS emp5;
 
+-- 7.将表employees2重命名为emp5
+ALTER TABLE employees2 RENAME TO emp5;s
 
+-- 8.在表dept和emp5中添加新列test_column，并检查所作的操作
+ALTER TABLE dept1 ADD COLUMN test_column VARCHAR(20);
 
+ALTER TABLE emp5 ADD COLUMN test_column VARCHAR(20);
 
-
-
+-- 9.直接删除表emp5中的列 department_id
+ALTER TABLE emp5 DROP COLUMN department_id;
 
 
 

@@ -1980,6 +1980,113 @@ ALTER TABLE emp5 ADD COLUMN test_column VARCHAR(20);
 -- 9.直接删除表emp5中的列 department_id
 ALTER TABLE emp5 DROP COLUMN department_id;
 
+#常见的数据类型
+/*
+数值型：
+整型
+小数：
+定点数
+浮点数
+字符型：
+较短的文本：char、varchar
+较长的文本：text、blob（较长的二进制数据）
+日期型：
+*/
+
+#一、鉴型
+]/*
+分类：
+tinyint、smallint、mediumint、int/integer、bigint
+1	   2	       3	4	     8
+特点：
+*/
+#1.如何设置无符号和有符号
+CREATE DATABASE IF NOT EXISTS prac;
+USE prac;
+CREATE TABLE tab_int(
+	t1 INT
+);
+
+INSERT INTO tab_int VALUES(-54324);
+
+CREATE TABLE IF NOT EXISTS tab_int2(
+	t1 INT,
+	t2 INT UNSIGNED
+);
+
+INSERT INTO tab_int2 VALUES(-534,346),
+(-234,5764);
+DESC tab_int2;
+
+# 现在这个语法是错误的 不能插入超过范围的数据
+INSERT INTO tab_int2 VALUES(-122,-234);
+SELECT * FROM tab_int2;
+
+INSERT INTO tab_int VALUES(2147483647);
+
+#错过范围 不可以insert
+INSERT INTO tab_int VALUES(2147483648);
+
+SELECT * FROM tab_int;
+
+# zerofill有unsigned的作用，插入负数会报错
+CREATE TABLE IF NOT EXISTS tab_int3(t INT(7) ZEROFILL);
+INSERT INTO tab_int3 VALUES(123);
+#INSERT INTO tab_int3 VALUES(-123);
+SELECT * FROM tab_int3;
+
+#二、小数
+]/*
+1.浮点型s
+float(M,D)
+double(M,D)
+2.定点型
+dec(M,D)
+decimal(M,D)
+
+① 
+M：整数部位+小数部位
+D：小数部位
+如果超过范围，则(旧版本插入临界值)直接报错
+
+②
+M和D都可以省略
+如果是decima1，则M默认为10，D默认为0
+如果是float和doub1e，
+则会根据插入的数值的精度来决定精度
+
+③定点型的精确度较高，
+如果要求插入数值的精度较高
+如货币运算等则考虑
+*/
+
+#原则：所选择的类型越简单越好，能保数值的类型越小越好
+CREATE TABLE IF NOT EXISTS tab_float(
+	f1 FLOAT(5,2),
+	f2 FLOAT(5,2),
+	f3 FLOAT(5,2)
+);
+
+SELECT * FROM tab_float;
+
+INSERT INTO tab_float VALUES(123.454,123.255,124.556);
+INSERT INTO tab_float VALUES(123.45,123.24,123.43);
+INSERT INTO tab_float VALUES(123.4,123.6,123.3);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

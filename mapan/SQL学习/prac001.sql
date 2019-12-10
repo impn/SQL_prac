@@ -2073,13 +2073,71 @@ INSERT INTO tab_float VALUES(123.454,123.255,124.556);
 INSERT INTO tab_float VALUES(123.45,123.24,123.43);
 INSERT INTO tab_float VALUES(123.4,123.6,123.3);
 
+#三、字符型
+1/*
+较短的文本：
+char
+varchar
+较长的文本：
+text
+p1ob（较大的二进制）
+
+特点：
+	写法		M的意思					特点		空间耗费	效率
+char 	char（M）	最大的字符数，可以省略，默认为1		固定长度的字符	比较耗费	高
+varchar varchar（M）	最大的字符数，不可以省略		可变长度的字符	比较节省	低
+*/
 
 
+-- 枚举类型
+USE prac;
+CREATE TABLE IF NOT EXISTS tab_char(
+	c1 ENUM('a','b','c')
+);
+DESC prac.tab_char;
+
+INSERT INTO tab_char VALUES('a');
+INSERT INTO tab_char VALUES('A'); -- 可以插入 会自动转换成小写
+INSERT INTO tab_char VALUES('m'); -- 失败
+SELECT * FROM tab_char;
+
+-- set是集合，有序，插入重复数据也不会重复
+CREATE TABLE IF NOT EXISTS tab_set(
+	s1 SET('a','b','c','d','e')
+);
+INSERT INTO tab_set VALUE('a');
+INSERT INTO tab_set VALUE('a,b');
+INSERT INTO tab_set VALUE('a,E,b');
+INSERT INTO tab_set VALUE('a,b,a');
+SELECT * FROM tab_set;
 
 
+# 日期型
+/*
+分类：
+date只保存日期
+time 只保存时间
+year只保存年
+datetime保存日期+时间
+timestamp保存日期+时间
+特点：
+		字节	范围		时区影响
+datetime	8	1000-9999	不受
+timestamp	3	1970-2038	受
+*/
+DROP TABLE IF EXISTS tab_date;
+CREATE TABLE IF NOT EXISTS tab_date(
+	t1 DATETIME,
+	t2 TIMESTAMP
+);
 
+INSERT INTO tab_date VALUES(NOW(),NOW());
 
+SELECT * FROM tab_date;
 
+SHOW VARIABLES LIKE 'time_zone';
+
+SET time_zone='+9:00';
 
 
 

@@ -2139,6 +2139,79 @@ SHOW VARIABLES LIKE 'time_zone';
 
 SET time_zone='+9:00';
 
+# 常见约束
+
+CREATE TABLE 表名(
+	字段名 字段类型 约束
+)
+
+
+
+# 创建表时添加约束
+
+# 1.添加列级约束
+
+/*
+语法：
+直接在字段名和类型后面追加约束类型即可。
+只支持：默认、非空、主键、唯一
+*/
+
+
+DROP DATABASE IF EXISTS students;
+CREATE DATABASE IF NOT EXISTS students;
+USE students;
+DROP TABLE IF EXISTS stuinfo;
+CREATE TABLE IF NOT EXISTS stuinfo(
+	id INT PRIMARY KEY, -- 主键
+	stuname VARCHAR(20) NOT NULL, -- 非空
+	gender CHAR(1) CHECK(gender='男' OR gender='女'), -- 性别
+	seat INT UNIQUE, -- 唯一
+	age INT DEFAULT 18, -- 默认约束
+	majorid INT REFERENCES major(id) -- 外键
+);
+CREATE TABLE IF NOT EXISTS major(
+	id INT PRIMARY KEY,
+	majorname VARCHAR(20)
+);
+DESC stuinfo;
+SHOW INDEX FROM stuinfo;
+#2.添加表级约束
+/*
+语法：在各个字段的最下面
+constraint约束名约束类型（字段名） 可以省略
+*/
+DROP TABLE IF EXISTS stuinfo;
+CREATE TABLE stuinfo(
+	id INT,
+	stuname VARCHAR(20),
+	gender CHAR(1),
+	seat INT,
+	age INT,
+	majorid INT,
+	CONSTRAINT pk PRIMARY KEY(id), -- 主键
+	CONSTRAINT uq UNIQUE(seat), -- 唯一键
+	CONSTRAINT ck CHECK(gender='男' OR gender='女'), -- 检查
+	CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES major(id) -- 外键
+);
+SHOW INDEX FROM stuinfo;
+DESC stuinfo;
+
+# 通用的写法
+DROP TABLE IF EXISTS stuinfo;
+CREATE TABLE IF NOT EXISTS stuinfo(
+	id INT PRIMARY KEY,
+	stuname VARCHAR(20) NOT NULL,
+	gender CHAR(1),
+	age INT DEFAULT 28,
+	seat INT UNIQUE,
+	majorid INT,
+	CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES maror(id)
+);
+
+
+
+
 
 
 

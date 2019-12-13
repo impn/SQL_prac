@@ -2206,14 +2206,42 @@ CREATE TABLE IF NOT EXISTS stuinfo(
 	age INT DEFAULT 28,
 	seat INT UNIQUE,
 	majorid INT,
-	CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES maror(id)
+	CONSTRAINT fk_stuinfo_major FOREIGN KEY(majorid) REFERENCES major(id)
 );
+/*
+含义：一种限制，用于限制表中的数据，为了保证表中的数据的准确和可靠性
+分类：六大约束
+	NOT NULL：非空，用于保证该字段的值不能为空比如姓名、学号等
+	DEFAULT：默认，用于保证该字段有默认值
+	比如性别
+	PRIMARY KEYI主键，用于保证该字段的值具有唯一性，并且非空
+	比如学号、员工编号等
+	UNTQUE：唯一，用于保证该字段的值具有唯一性，可以为空比如座位号
+	CHECK：检查约束【mysq1中不支持】
+	比如年龄、性别
+	FOREIGN REY：外键，用于限制两个表的关系，用于保证该字段的值必须来自于主表的关联列的值
+	在从表添加外键约束，用于引用主表中某列的值
+	比如学生表的专业编号，员工表的部门编号，员工表的工种编号
+添加约束的时机：
+	1.创建表时
+	2.修改表时
+约束的添加分类：
+	列级约束：
+		六大约束语法上都支持，但外键约束没有效果
+	表级约束：
+		除了非空、默认，其他的都支持
+主键和唯一的大对比：
+	保证唯一性	是否允许为空	一个表中可以有多个	是否允许组合
+主键	✔		✖		最多有1个		
+唯一	✔		✔		可有有多个		
 
 
+*/
 
-
-
-
+INSERT INTO major VALUES(1,'java'),(2,'h5');
+INSERT INTO stuinfo VALUES
+(1,'join','男',12,19,1),
+(2,'lily','女',12,18,1);
 
 
 

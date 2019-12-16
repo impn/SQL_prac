@@ -2232,8 +2232,8 @@ CREATE TABLE IF NOT EXISTS stuinfo(
 		除了非空、默认，其他的都支持
 主键和唯一的大对比：
 	保证唯一性	是否允许为空	一个表中可以有多个	是否允许组合
-主键	✔		✖		最多有1个		
-唯一	✔		✔		可有有多个		
+主键	✔		✖		最多有1个		✔，不推荐
+唯一	✔		✔		可有有多个		✔，不推荐
 
 
 */
@@ -2244,10 +2244,58 @@ INSERT INTO stuinfo VALUES
 (2,'lily','女',12,18,1);
 
 
+# 修改表时添加约束
+DROP TABLE IF NOT EXISTS stuinfo;
+CREATE TABLE stuinfo(
+	id INT,
+	stuname VARCHAR(20),
+	gender CHAR(1),
+	seat INT,
+	age INT,
+	majorid INT
+	
+);
 
+# 1.添加非空约束
+ALTER TABLE stuinfo MODIFY COLUMN stuname VARCHAR(20) NOT NULL;
 
+# 2.添加默认约束
+ALTER TABLE stuinfo MODIFY COLUMN age INT DEFAULT 18;
 
+# 3.添加主键
 
+-- 方式一
+ALTER TABLE stuinfo MODIFY COLUMN id INT PRIMARY KEY;
+-- 方式二
+ALTER TABLE stuinfo ADD PRIMARY KEY(id);
+
+# .删除非空约束
+ALTER TABLE stuinfo MODIFY COLUMN stuname VARCHAR(20);
+
+# 4.添加唯一键
+ALTER TABLE stuinfo
+
+# 测试
+/*
+1.向表emp2的id列中添加PRIMARYKEY约束（my_emp_id_pk）.
+2.向表dept2的id列中添加PRIMARYKEY约束（my_dept_id_pk）.
+3.向表emp2中添加列dept_id，并在其中定义FOREIGNKEY约束，与之相关联的列是dept2表中的id列。
+*/
+SHOW DATABASES;
+SHOW TABLES;
+
+SELECT * FROM dept2;
+SELECT * FROM emp5;
+-- 1
+ALTER TABLE emp5 MODIFY COLUMN employee_id INT PRIMARY KEY;
+ALTER TABLE emp5 ADD CONSTRAINT my_emp_id_pk PRIMARY KEY(employee_id);
+
+-- 2
+ALTER TABLE dept2 MODIFY COLUMN department_id INT PRIMARY KEY;
+ALTER TABLE deot2 ADD CONSTRAINT my_dept_id_pk PRIMARY KEY(department_id);
+-- 3
+ALTER TABLE emp5 ADD COLUMN dept_id INT;
+ALTER TABLE emp5 ADD CONSTRAINT fk_emp5_dept2 FOREIGN KEY(dept_id) REFERENCES dept2(department_id);
 
 
 

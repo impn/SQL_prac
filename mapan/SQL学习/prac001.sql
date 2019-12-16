@@ -2297,6 +2297,15 @@ ALTER TABLE deot2 ADD CONSTRAINT my_dept_id_pk PRIMARY KEY(department_id);
 ALTER TABLE emp5 ADD COLUMN dept_id INT;
 ALTER TABLE emp5 ADD CONSTRAINT fk_emp5_dept2 FOREIGN KEY(dept_id) REFERENCES dept2(department_id);
 
+#		位置		支持的约束类型			是否可以起约束名
+# 列级约束	列的后面	语法都支持，但外键没有效果	不可以
+# 表级约束	所有列的下面	默认和非空不支持，其他支持	可以（主键没有效果）
+
+# 标识列
+
+
+
+
 
 
 

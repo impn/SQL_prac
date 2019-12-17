@@ -212,6 +212,61 @@ UPDATE my_v1 SET last_name='张无忌' WHERE last_name='张飞';
 # 3.删除
 DELETE FROM my_v1 WHERE last_name='张无忌'; 
 
+ #县备以下特点的视图允许更新
+ /*
+包含以下关键字的sq1语句：分组函数、distinct、group by、having、union或者union al1
+常量视图
+SELECT中包含子查询 
+JOIN
+FROM一个不能更新的视图
+WHERE子句的子查询引用了FROM子句中的表
+
+*/
+
+/*
+
+1、创建表Book表，字段如下：
+bid整型，要求主键
+bname 字符型，要求设置唯一键，并非空
+price 浮点型，要求有默认值10
+btypeId 类型编号，要求引用bookType表的id字段
+
+
+已知bookType表（不用创建），字段如下：
+id name
+2、开启事务
+向表中插入1行数据，并结束
+3、创建视图，实现查询价格大于100的书名和类型名
+4、修改视图，实现查询价格在90-120之间的书名和价格
+5、删除刚才建的视图
+*/
+
+-- 1
+USE prac;
+CREATE TABLE IF NOT EXISTS Book(
+	bid INT PRIMARY KEY,
+	banme VARCHAR(20) UNIQUE NOT NULL,
+	price FLOAT DEFAULT 10,
+	btypeId INT,
+	FOREIGN KEY(btypeid) REFERENCES bookType(id)
+);
+-- 2
+
+SET autocommit=0;
+INSERT INTO book(bid,bname,price,btypeid)
+VALUES(1001,'平凡的世界',133.89,23);
+ROLLBACK;
+
+-- 3
+CREATE VIEW my_v1 AS
+SELECT bname,btypeid FROM book WHERE price>100;
+
+-- 4
+CREATE OR REPLACE VIEW my_v1 AS
+SELECT bname,price FROM book WHERE price BETWEEN 90 AND 120;
+
+-- 5
+DROP VIEW IF EXISTS my_v1;
 
 
 

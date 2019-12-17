@@ -269,6 +269,16 @@ SELECT bname,price FROM book WHERE price BETWEEN 90 AND 120;
 DROP VIEW IF EXISTS my_v1;
 
 
+# 级联删除
+ALTER TABLE stuinfo ADD CONSTRAINT fk_stu_major FOREIGN KEY(majorid) REFERENCES major(id) ON DELETE CASCADE;
+
+# 级联置空
+ALTER TABLE stuinfo ADD CONSTRAINT fk_stu_major FOREIGN KEY(majorid) REFERENCES major(id) ON DELETE SET NULL; 
+
+# 删除专业表的3号专业
+DELETE FROM major WHERE id=3;
+
+ 
 
 
 

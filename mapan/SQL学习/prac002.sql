@@ -105,3 +105,120 @@ INNER JOIN maior m
 ON s.majorid=m. majorid 
 WHEREs. majorid=1;
 
+
+# 创建视图
+/*
+1.查询邮箱中包含a字符的员工名、部门名和工种信息
+2.查询各部门的平均工资级别
+3.查询平均工资最低的部门信息
+4.查询平均工资最低的部门名和工资
+*/
+DROP VIEW IF EXISTS prac.v2;
+CREATE VIEW prac.v2 AS
+SELECT 
+	e.last_name,
+	d.department_name,
+	e.job_id 
+FROM employees e 
+JOIN departments d
+ON e.department_id=d.department_id
+JOIN jobs j ON j.job_id=e.job_id ;
+
+SELECT * FROM prac.v2;
+
+
+# 视图修改
+USE myemployees;
+
+-- 创建视图(方式1)
+CREATE OR REPLACE VIEW v3 AS
+SELECT 
+	employee_id,
+	last_name,
+	job_title,
+	e.department_id,
+	department_name
+FROM employees AS e
+JOIN departments AS d
+ON e.department_id=d.department_id
+JOIN jobs AS j
+ON j.job_id=e.job_id;
+
+SELECT * FROM v3;
+
+-- 修改方式2
+ALTER VIEW v3 AS
+SELECT * FROM employees;
+
+
+-- 删除视图
+
+DROP VIEW IF EXISTS v3,prac.v2;
+
+-- 查看视图
+DESC v3;
+
+SHOW CREATE VIEW v3;
+
+#一、创建视图emp_v1，要求查询电话号码以011’开头的员工姓名和工资、邮箱
+
+SELECT * FROM employees;
+CREATE OR REPLACE VIEW emp_v1 AS
+SELECT
+	last_name,
+	salary,
+	email
+FROM employees
+WHERE phone_number LIKE '011%';
+
+SELECT * FROM emp_v1;
+#二、创建视图emp_v2，要求查询部门的最高工资高于12000的部门信息
+CREATE OR REPLACE VIEW emp_v2 AS
+ (SELECT 
+		department_id,
+		MAX(salary) AS max_sal
+	FROM employees AS e
+	WHERE department_id IS NOT NULL
+	GROUP BY department_id
+	HAVING max_sal>12000);
+	
+SELECT 
+	d.*,
+	max_sal 
+FROM departments AS d
+JOIN  emp_v2 AS t1
+ON d.department_id=t1.department_id;
+
+# 视图的更新
+-- 更改视图的
+
+CREATE OR REPLACE VIEW my_v1 AS
+SELECT 
+	last_name,
+	email-- ,
+	-- salary*12*(1+ifnull(commission_pct,0)) as 'annual salary'
+FROM employees;
+
+# 1.插入
+INSERT INTO my_v1 VALUES('张飞','213@123.com');
+
+SELECT * FROM employees;
+
+-- 视图可以插入，在视图没有做复杂处理的时候，可以插入或者更改与原表结构相同或者少于原表结构字段的行，但是不能插入和原表字段结构不同的行。
+
+# 2.修改
+UPDATE my_v1 SET last_name='张无忌' WHERE last_name='张飞';
+
+# 3.删除
+DELETE FROM my_v1 WHERE last_name='张无忌'; 
+
+
+
+
+
+
+
+
+
+
+

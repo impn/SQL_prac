@@ -98,6 +98,115 @@ SELECT COUNT(1) INTO @m4 FROM employees;
 
 SELECT @m4;
 
+# 2.局部变量
+/*
+作用域：仅仅在定义它的begin和end中有效
+*/
+#①声明
+DECLARE 变量名 类型;
+DECLARE 变量名 类型 DEFAULT 值;
+
+#②赋值
+/*
+方式一：通过set或select
+set 局部变量名=值
+set 局部变量名:=值
+select 用户变量名:=值
+
+方式二：通过select into
+select 字段 into @局部变量名
+from 表
+*/
+
+#③使用
+SELECT 局部变量名;
+
+# 案例 声明两个变量并赋初值，求和 打印
+SET @a1:=19;
+SET @a2:=11;
+SET @a3=@a1+@a2;
+SELECT @a3;
+
+# 局部变量需要写在begin和end中
+BEGIN
+DECLARE m INT DEFAULT 1;
+DECLARE n INT DEFAULT 2;
+DECLARE SUM INT ;
+SET SUM=m+n;
+
+SELECT SUM;
+END
+#存储过程和函数
+/*
+存储过程和函数：类似于java中的方法
+好处：
+1.提高代码的重用性
+2.简化操作
+
+*/
+
+# 储存过程
+/*
+含义：一组预先编译好的sQL语句的集合，理解成批处理语句\好处：
+1.提高代码的重用性
+2.简化操作
+3.减少了编译次数 并且 减少了和数据库服务器的连接次数，提高了效率
+
+*/
+#一、创建语法
+CREATE PROCEDURE 存储过程名(参数列表);
+BEGIN
+	存储过程体
+END
+注意：
+1、参数列表包含三部分
+参数模式 参数名 参数类型
+举例：
+IN stuname VARCHAR(20)
+
+参数模式： 
+IN: 该参数可以作为输入，也就是该参数需要调用方法传入值
+OUT: 该参数可以作为输出，也就是该参数可以作为返回值
+INOUT: 该参数可以作为输出也可以作为输入，也就是该参数既需要传入值，又可以返回值
+
+2、如果存储过程提仅仅只有一句话 BEGIN end可以省略
+存储过程提中的每一条sql语句结尾要求必须加分号。
+存储过程的结尾可以使用 delimiter重新设置
+语法：
+DELIMITER 结束标记
+案例：delimiter $
+#二、调用语法
+
+CALL 存储过程名(实参列表);
+
+#1.空参列表
+-- 案列：插入到admin表中5条记录
+SELECT * FROM admin;
+
+DROP PROCEDURE IF EXISTS myp1;
+DELIMITER $
+CREATE PROCEDURE myp1()
+BEGIN
+	INSERT INTO admin(username,PASSWORD)
+	VALUES('tom','2001'),('jack','2001'),('rose','2001'),('lily','2001'),('tim','2001');
+END $
 
 
 
+CALL myp1();
+
+创建带 IN 模式的参数的存储过程
+#案例1：创建存储过程实现根据女神名，查询对应的男神信息
+
+DELIMITER $
+CREATE PROCEDURE myp2(IN beautyName VARCHAR(20))
+BEGIN
+	SELECT bo.*
+	FROM boys AS bo
+	RIGHT JOIN beauty AS b
+	ON bo.id=b.boyfriend_id
+	WHERE b.name=beautyName;
+END $
+
+CALL myp2('苍老师');
+SELECT * FROM beauty;

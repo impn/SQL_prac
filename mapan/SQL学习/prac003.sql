@@ -198,6 +198,9 @@ CALL myp1();
 创建带 IN 模式的参数的存储过程
 #案例1：创建存储过程实现根据女神名，查询对应的男神信息
 
+
+DROP PROCEDURE IF EXISTS myp2;
+
 DELIMITER $
 CREATE PROCEDURE myp2(IN beautyName VARCHAR(20))
 BEGIN
@@ -208,5 +211,69 @@ BEGIN
 	WHERE b.name=beautyName;
 END $
 
-CALL myp2('苍老师');
+CALL myp2('柳岩');
+
 SELECT * FROM beauty;
+SELECT * FROM boys;
+UPDATE boys SET id=10 WHERE userCP=300; 
+UPDATE beauty SET boyfriend_id=10 WHERE id=1;
+#案例2：创建存储过程实现，用户是否登录成功
+
+
+DROP PROCEDURE IF EXISTS myp3;
+DELIMITER $
+CREATE PROCEDURE myp3 (IN username VARCHAR(20),IN passwd VARCHAR(20))
+BEGIN
+DECLARE result INT DEFAULT 0;
+	SELECT COUNT(1) INTO result -- 赋值
+	FROM admin
+	WHERE admin.username = username
+	AND admin.password=passwd;
+SELECT IF(result>0,"成功","失败") AS 登录结果;
+END $
+
+
+SELECT * FROM admin;
+
+CALL myp3("john",8888);
+
+#3、创建带out模式的存储过程
+#案例1：根据女神名，返回对应的男神名
+
+DROP PROCEDURE IF EXISTS myp5;
+DELIMITER $
+CREATE PROCEDURE myp5 (IN beautyName VARCHAR(20),OUT boyName VARCHAR(20))
+BEGIN
+	SELECT bo.boyname INTO boyName
+	FROM boys AS bo
+	JOIN beauty AS b
+	ON bo.id=b.boyfriend_id
+	WHERE b.name=beautyName;
+END $
+
+-- 调用
+SET @bname:='';
+CALL myp5("柳岩",@bname);
+SELECT @bname;
+
+#案例2：根据女神名，返回对应的男神名和男神魅力值
+DROP PROCEDURE myp6;
+DELIMITER $
+CREATE PROCEDURE myp6 (
+  IN beautyName VARCHAR (20),
+  OUT boyNames VARCHAR (20),
+  OUT userCPs INT
+) 
+BEGIN
+	SELECT 
+	    bo.boyName,bo.userCP INTO boynames,userCPs 
+	FROM boys AS bo 
+	JOIN beauty AS b 
+	ON bo.id = b.boyfriend_id 
+	WHERE b.name = beautyName;
+END $
+
+SET @c:='柳岩';
+CALL myp6(@c,@a,@b);
+SELECT @c AS 姓名,@a AS 男朋友,@b AS 魅力值;
+  

@@ -161,7 +161,7 @@ BEGIN
 	END CASE;
 END $
 
-
+CALL test_case(50);
 
 
 

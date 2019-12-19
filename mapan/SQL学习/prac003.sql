@@ -276,4 +276,81 @@ END $
 SET @c:='柳岩';
 CALL myp6(@c,@a,@b);
 SELECT @c AS 姓名,@a AS 男朋友,@b AS 魅力值;
+
+#4.创建带inout模式参数的存储过程
+#案例1：传入a和b两个值，最终a和b都翻倍并返回
+
+DELIMITER $
+
+CREATE PROCEDURE myp7 (INOUT a INT,INOUT b INT)
+BEGIN
+	SELECT a*2 ,b*2 INTO a,b;
+END $
+SET @a:=2;
+SET @b:=5;
+CALL myp7(@a,@b);
+SELECT @a,@b;
+
+#一、创建存储过程实现传入用户名和密码，插入到admin表中
+
+DELIMITER $
+CREATE PROCEDURE myp8(IN username VARCHAR(20),IN passwd VARCHAR(20))
+BEGIN
+	INSERT INTO admin(username,PASSWORD)VALUES(username,passwd);
+END $
+
+CALL myp8("mapan","123456");
+
+SELECT * FROM admin;
+
+#二、创建存储过程或函数实现传入女神编号，返回女神名称和女神电话
+
+DELIMITER $
+CREATE PROCEDURE myp9(IN bid INT,OUT nick VARCHAR(20),OUT num VARCHAR(20))
+BEGIN
+	SELECT NAME,phone INTO nick,num
+	FROM beauty AS b
+	WHERE b.id = bid;
+END $
+
+SET @a:=5;
+CALL myp9(@a,@b,@c);
+SELECT @a AS 编号,@b AS 女神,@c AS 电话;
+
+
+#三、创建存储存储过程或函数实现传入两个女神生日，返回大小
+DROP PROCEDURE myp10;
+DELIMITER $
+CREATE PROCEDURE myp10(IN birth1 DATETIME, IN birth2 DATETIME,OUT result VARCHAR(20))
+BEGIN
+	SELECT IF(birth1>birth2,'1号>2号',IF(birth1<birth2,"1号<2号","1号=2号")) INTO result;
+END $
+
+CALL myp10('1995-12-05','1995-12-05',@a);
+SELECT @a;
+
+# 删除存储过程
+DROP PROCEDURE my11;
+# 查看存储过程的信息
+SHOW CREATE PROCEDURE myp10;
+
+# 四、创建存储过程或函数实现传入一个日期，格式化成xx年xx月xx日并返回
+DROP PROCEDURE mypro1;
+DELIMITER $
+CREATE PROCEDURE mypro1(IN time_before DATETIME,OUT time_after VARCHAR(30))
+BEGIN
+	SELECT DATE_FORMAT(time_before,'%Y年%m月%d日') INTO time_after;
+END $
+
+SET @a:='2019-12-19';
+CALL mypro1(@a,@b);
+SELECT @a,@b;
+
+# 五、创建存储过程或函数实现传入女神名称，返回：女神AND男神格式的字符串
+#如传入：小昭 返回：小昭AND张无忌
+#六、创建存储过程或函数，根据传入的条目数和起始索引，查询beauty表的记录
+
+
+
+
   

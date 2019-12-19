@@ -348,7 +348,35 @@ SELECT @a,@b;
 
 # 五、创建存储过程或函数实现传入女神名称，返回：女神AND男神格式的字符串
 #如传入：小昭 返回：小昭AND张无忌
+
+DELIMITER $
+CREATE PROCEDURE mypro2(IN beNane VARCHAR(20),OUT str VARCHAR(40))
+BEGIN
+	SELECT
+		CONCAT(b.name,"and",bo.boyname)INTO str
+	FROM beauty AS b
+	JOIN boys AS bo
+	ON b.boyfriend_id=bo.id
+	WHERE b.name=beNane;
+END $
+
+CALL mypro2("周冬雨",@B);
+SELECT @B;
+
+
 #六、创建存储过程或函数，根据传入的条目数和起始索引，查询beauty表的记录
+DROP PROCEDURE mypro3;
+DELIMITER $
+CREATE PROCEDURE mypro3(IN xx INT,IN index_a INT)
+BEGIN
+	SELECT *
+	FROM beauty
+	ORDER BY id
+	LIMIT index_a,xx;
+END $
+
+CALL mypro3(3,1);
+
 
 
 

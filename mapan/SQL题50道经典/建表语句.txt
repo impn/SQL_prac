@@ -1,0 +1,4 @@
+create table student(sid string,sname string,sage int,ssex string) row format delimited fields terminated by '\t';
+create table course(cid string,cname string,tid string) row format delimited fields terminated by '\t';
+create table teacher(tid string,tname string) row format delimited fields terminated by '\t';
+create table sc(sid string,cid string,score int) row format delimited fields terminated by '\t';

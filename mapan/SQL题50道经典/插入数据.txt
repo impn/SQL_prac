@@ -1,0 +1,4 @@
+load data local inpath '/home/mapan/student' into table student;
+load data local inpath '/home/mapan/course' into table course;
+load data local inpath '/home/mapan/teacher' into table teacher;
+load data local inpath '/home/mapan/sc' into table sc;

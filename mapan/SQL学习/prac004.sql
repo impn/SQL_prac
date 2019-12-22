@@ -163,22 +163,134 @@ END $
 
 CALL test_case(50);
 
+#3.if结构
+/*
+功能：实现多重分支
+功能：实现多重分支语法：
+if 条件1then语句1；elseif条件2 then语句2；
+【else 语句n；】
+end if;
+应用在begin end中
+*/
+#案例1：根据传入的成绩，来显示等级，比如传入的成绩：90-100，返回网，80-90，返回B，60-80，返回c，否则，返回D
+
+DELIMITER $
+CREATE FUNCTION test_if (score INT) RETURNS CHAR
+BEGIN
+	 IF score>=90 AND score <100 THEN RETURN 'A';
+	 ELSEIF score BETWEEN 80 AND 90 THEN RETURN 'B';
+	 ELSEIF score BETWEEN 70 AND 80 THEN RETURN 'C';
+	 ELSE RETURN 'D';
+	 END IF;
+END $
+
+SELECT test_if(29);
+
+#1.while
+/*
+	语法：
+	【标签：】while循环条件do
+	循环体；
+	end while【标签】;
+	联想：
+	while(循环条件){
+	循环体;
+*/
+
+#2.1oop
+/*
+语法：
+	【标签：】1oop循环体;
+	end 1oop【标签】;
+
+	可以用来模拟简单的死循环
+*/
+
+#3.repeat
+/*
+	语法：
+	【标签：】repeat循环体;
+	until结刺循环的条件
+	end repeat【标签】;
+*/
 
 
+#没有添加循环控制语句
+#案例：批量插入，根据次数插入到admin表中多条记录
+DROP PROCEDURE prowhile;
+DELIMITER $
+CREATE PROCEDURE pro_while(IN insertCount INT)
+BEGIN
+	DECLARE i INT DEFAULT 1;
+	a:WHILE i<insertCount
+	DO INSERT INTO admin(username,PASSWORD)VALUES(CONCAT('rose',i),'890');
+	SET i=I+1;
+	END WHILE a; 
+END $
 
+CALL pro_while(100);
 
+#2.添加leave语句
+#案例：批量插入，根据次数插入到admin表中多条记录，如果次数>20则停止
 
+DROP PROCEDURE test_while1s;
+DELIMITER $
+CREATE PROCEDURE test_while1(IN insertCount INT)
+BEGIN 
+	DECLARE i INT DEFAULT 1;
+	a:WHILE i<=insertCount 
+	DO INSERT INTO admin(username,PASSWORD)VALUES(CONCAT('xiaohua',i),10000);
+	IF i>=20 THEN LEAVE a;
+	END IF;
+	SET i=i+1;
+	END WHILE a;
+END $
+CALL test_while1(100);
 
+SELECT * FROM admin; 
 
+#3.添加iterate语句
 
+-- 重新建表
+CREATE TABLE admin(id INT PRIMARY KEY AUTO_INCREMENT,username VARCHAR(20),PASSWORD VARCHAR(20));
+INSERT INTO admin VALUES(1000,"张飞","12345");
+INSERT INTO admin(username,PASSWORD)VALUES("关羽","12345");
 
+#案例：批量插入，根据次数插入到admin表中多条记录，只插入偶数次
+DROP PROCEDURE test_while2;
+DELIMITER $
+CREATE PROCEDURE test_while2(IN insertCount INT)
+BEGIN 
+	DECLARE i INT DEFAULT 1;
+	a:WHILE i<=insertCount 
+	DO IF MOD(i,2)!=0 THEN INSERT INTO admin(username,PASSWORD)VALUES(CONCAT('xiaohua',i),10000);
+	END IF;
+	SET i=i+1;
+	END WHILE a;
+END $
+CALL test_while2(100);
+/*一、已知表stringcontent其中字段：
+id 自增长
+content varchar（20）
+向该表插入指定个数的，随机的字倒串
+*/
 
+CREATE TABLE stringcontent(id INT PRIMARY KEY AUTO_INCREMENT,content VARCHAR(20));
 
+DELIMITER $
+CREATE PROCEDURE my_p1(IN i INT)
+BEGIN
+	DECLARE j INT DEFAULT 1;
+	a:WHILE j<i
+	DO INSERT INTO stringcontent(content)VALUES(CONVERT(100*RAND(), CHAR));
+	SET j=j+1;
+	END WHILE a;
+END $
 
+CALL my_p1(100);
 
-
-
-
+SELECT CONVERT(100*RAND(), CHAR);
+SELECT * FROM stringcontent;
 
 
 

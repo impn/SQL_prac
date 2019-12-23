@@ -1,16 +1,84 @@
 -- 1. 查询" 01 "课程比" 02 "课程成绩高的学生的信息及课程分数
-select 
+
+select * from student as t3
+right join(SELECT
+        t1.sid,
+        s1,
+        s2
+    FROM    
+        (select sid,score as s1 from sc where cid='01') as t1, -- 01课程的成绩
+        (select sid,score as s2 from sc where cid='02') as t2  -- 02课程的成绩
+    where t1.sid =t2.sid
+    and s1>s2) as t4
+on t3.sid=t4.sid;
 
 -- 1.1 查询同时存在" 01 "课程和" 02 "课程的情况
--- 
--- 1.2 查询存在" 01 "课程但可能不存在" 02 "课程的情况(不存在时显示为 null )
--- 
--- 1.3 查询不存在" 01 "课程但存在" 02 "课程的情况
--- 
+
+select 
+    t1.sid
+from
+    (select sid from sc where cid=01) as t1, -- 查询01课程情况
+    (select sid from sc where cid=02) as t2 -- 查询02课程情况
+WHERE
+    t1.sid = t2.sid;
+
+-- 1.2 查询存在"01"课程但可能不存在"02"课程的情况(不存在时显示为 null )
+
+SELECT t1.sid
+FROM (select sid from sc where cid=01) as t1 -- 查询01课程情况
+left JOIN (select sid from sc where cid=02) as t2  -- 查询02课程情况
+ON t1.sid = t2.sid
+where t2.sid is null;
+
+-- 1.3 查询不存在"01"课程但存在"02"课程的情况
+
+SELECT t2.sid
+from     (select sid from sc where cid=01) as t1 -- 查询01课程情况
+right join     (select sid from sc where cid=02) as t2 -- 查询02课程情况
+on t1.sid=t2.sid
+where t1.sid is null; 
+
 -- 2. 查询平均成绩大于等于 60 分的同学的学生编号和学生姓名和平均成绩
--- 
+ 
+ -- 下面sql在mysql中可以跑，但是在hive中不能运行。
+SELECT
+    t2.sid,
+    t2.sname,
+    AVG(t1.score) AS avg_sc
+FROM
+    sc AS t1,
+    student AS t2
+WHERE t1.sid= t2.sid
+GROUP BY t2.sid
+HAVING avg_sc>=60;
+
+-- 下面SQL在hive中正常运行
+SELECT
+    t1.sid,
+    t1.sname,
+    t2.avg_sc
+from
+    student as t1,
+    (select sid,avg(score) as avg_sc from sc group by sid) as t2
+where t1.sid=t2.sid
+and t2.avg_sc>=60;
+
 -- 3. 查询在 SC 表存在成绩的学生信息
--- 
+
+-- 同样的，下面的代码在mysql中可以运行，在hive中不能运行
+select t2.* 
+from
+    sc as t1,
+    student as t2 
+where t1.sid=t2.sid 
+group by t1.sid;
+
+-- 在hive中运行的代码
+select t2.*
+from (select sid from sc group by sid ) as t1
+join student as t2
+on t1.sid=t2.sid;
+
 -- 4. 查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩(没成绩的显示为 null )
 -- 
 -- 4.1 查有成绩的学生信息

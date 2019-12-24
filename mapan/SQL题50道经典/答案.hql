@@ -123,16 +123,54 @@ select count(1) from teacher where tname like "李%";
 
 -- 6. 查询学过「张三」老师授课的同学的信息
 
-select tid from teacher where tname="张三";
+select t3.* from (  --找这些同学的信息
+    select t2.sid  -- 找修过张三老师的课的同学学号
+    from (select cid -- 找张三老师的讲授课程编号
+        from course as t2 
+        join(select tid -- 找张三老师的教师编号
+            from teacher 
+            where tname="张三")as t1  
+            on t1.tid=t2.tid) as t1 
+    join sc as t2 
+    on t1.cid=t2.cid
+)as t4 
+join student as t3 
+on t3.sid=t4.sid;
 
-select cid from course as t2 join(select tid from teacher where tname="张三")as t1 on t1.tid=t2.tid;
 
 
 
 -- 7. 查询没有学全所有课程的同学的信息
--- 
+
+-- MySQL中正常跑
+select -- 查询这些同学的信息
+    t1.*,
+    t2.cnt_course
+from student as t1 
+left join (select -- 查询有成绩的学生学的科目
+                sid,
+                count(1) as cnt_course 
+            from sc 
+            group by sid) as t2 
+on t1.sid=t2.sid
+where t2.cnt_course<3; -- 查询所有科目数
+
+-- Hive中正常跑
+select 
+    t3.*
+from student as t3
+left join(select 
+            sid,
+            count(1) as cnt_c
+          from sc 
+          group by sid) as t2
+on t3.sid=t2.sid
+join (select count(1) as n1 from course) t1
+on t1.n1=t2.cnt_c
+where t2.sid is null;
+
 -- 8. 查询至少有一门课与学号为" 01 "的同学所学相同的同学的信息
--- 
+
 -- 9. 查询和" 01 "号的同学学习的课程 完全相同的其他同学的信息
 -- 
 -- 10. 查询没学过"张三"老师讲授的任一门课程的学生姓名

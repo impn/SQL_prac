@@ -80,13 +80,55 @@ join student as t2
 on t1.sid=t2.sid;
 
 -- 4. 查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩(没成绩的显示为 null )
--- 
+
+-- MySQL中正常运行
+select 
+    t1.sid,
+    t1.sname,
+    count(score) as cnt_sc,
+    sum(score) as sum_sc
+from 
+    sc as t2,
+    student as t1
+where t1.sid = t2.sid
+group by t1.sid;
+
+--Hive中正常运行
+select
+    t1.sid,
+    t1.sname,
+    t2.cnt_sc,
+    t2.sum_sc
+from
+    student as t1
+left join(
+    select 
+        sid,    
+        count(score) as cnt_sc,
+        sum(score) as sum_sc
+    from sc
+    group by sid) as t2
+ON t1.sid=t2.sid;
+
 -- 4.1 查有成绩的学生信息
--- 
+
+select t1.* 
+from student as t1 
+join (select sid from sc group by sid)as t2 
+on t1.sid=t2.sid ;
+
 -- 5. 查询「李」姓老师的数量
--- 
+
+select count(1) from teacher where tname like "李%";
+
 -- 6. 查询学过「张三」老师授课的同学的信息
--- 
+
+select tid from teacher where tname="张三";
+
+select cid from course as t2 join(select tid from teacher where tname="张三")as t1 on t1.tid=t2.tid;
+
+
+
 -- 7. 查询没有学全所有课程的同学的信息
 -- 
 -- 8. 查询至少有一门课与学号为" 01 "的同学所学相同的同学的信息

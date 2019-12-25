@@ -1,42 +1,42 @@
 -- 1. 查询" 01 "课程比" 02 "课程成绩高的学生的信息及课程分数
 
-select * from student as t3
-right join(SELECT
+SELECT * FROM student AS t3
+RIGHT JOIN(SELECT
         t1.sid,
         s1,
         s2
     FROM    
-        (select sid,score as s1 from sc where cid='01') as t1, -- 01课程的成绩
-        (select sid,score as s2 from sc where cid='02') as t2  -- 02课程的成绩
-    where t1.sid =t2.sid
-    and s1>s2) as t4
-on t3.sid=t4.sid;
+        (SELECT sid,score AS s1 FROM sc WHERE cid='01') AS t1, -- 01课程的成绩
+        (SELECT sid,score AS s2 FROM sc WHERE cid='02') AS t2  -- 02课程的成绩
+    WHERE t1.sid =t2.sid
+    AND s1>s2) AS t4
+ON t3.sid=t4.sid;
 
 -- 1.1 查询同时存在" 01 "课程和" 02 "课程的情况
 
-select 
+SELECT 
     t1.sid
-from
-    (select sid from sc where cid=01) as t1, -- 查询01课程情况
-    (select sid from sc where cid=02) as t2 -- 查询02课程情况
+FROM
+    (SELECT sid FROM sc WHERE cid=01) AS t1, -- 查询01课程情况
+    (SELECT sid FROM sc WHERE cid=02) AS t2 -- 查询02课程情况
 WHERE
     t1.sid = t2.sid;
 
 -- 1.2 查询存在"01"课程但可能不存在"02"课程的情况(不存在时显示为 null )
 
 SELECT t1.sid
-FROM (select sid from sc where cid=01) as t1 -- 查询01课程情况
-left JOIN (select sid from sc where cid=02) as t2  -- 查询02课程情况
+FROM (SELECT sid FROM sc WHERE cid=01) AS t1 -- 查询01课程情况
+LEFT JOIN (SELECT sid FROM sc WHERE cid=02) AS t2  -- 查询02课程情况
 ON t1.sid = t2.sid
-where t2.sid is null;
+WHERE t2.sid is null;
 
 -- 1.3 查询不存在"01"课程但存在"02"课程的情况
 
 SELECT t2.sid
-from     (select sid from sc where cid=01) as t1 -- 查询01课程情况
-right join     (select sid from sc where cid=02) as t2 -- 查询02课程情况
-on t1.sid=t2.sid
-where t1.sid is null; 
+FROM     (SELECT sid FROM sc WHERE cid=01) AS t1 -- 查询01课程情况
+RIGHT JOIN     (SELECT sid FROM sc WHERE cid=02) AS t2 -- 查询02课程情况
+ON t1.sid=t2.sid
+WHERE t1.sid is null; 
 
 -- 2. 查询平均成绩大于等于 60 分的同学的学生编号和学生姓名和平均成绩
  
@@ -57,117 +57,120 @@ SELECT
     t1.sid,
     t1.sname,
     t2.avg_sc
-from
-    student as t1,
-    (select sid,avg(score) as avg_sc from sc group by sid) as t2
-where t1.sid=t2.sid
-and t2.avg_sc>=60;
+FROM
+    student AS t1,
+    (SELECT sid,avg(score) AS avg_sc FROM sc GROUP BY sid) AS t2
+WHERE t1.sid=t2.sid
+AND t2.avg_sc>=60;
 
 -- 3. 查询在 SC 表存在成绩的学生信息
 
 -- 同样的，下面的代码在mysql中可以运行，在hive中不能运行
-select t2.* 
-from
-    sc as t1,
-    student as t2 
-where t1.sid=t2.sid 
-group by t1.sid;
+SELECT t2.* 
+FROM
+    sc AS t1,
+    student AS t2 
+WHERE t1.sid=t2.sid 
+GROUP BY t1.sid;
 
 -- 在hive中运行的代码
-select t2.*
-from (select sid from sc group by sid ) as t1
-join student as t2
-on t1.sid=t2.sid;
+SELECT t2.*
+FROM (SELECT sid FROM sc GROUP BY sid ) AS t1
+JOIN student AS t2
+ON t1.sid=t2.sid;
 
 -- 4. 查询所有同学的学生编号、学生姓名、选课总数、所有课程的总成绩(没成绩的显示为 null )
 
 -- MySQL中正常运行
-select 
+SELECT 
     t1.sid,
     t1.sname,
-    count(score) as cnt_sc,
-    sum(score) as sum_sc
-from 
-    sc as t2,
-    student as t1
-where t1.sid = t2.sid
-group by t1.sid;
+    COUNT(score) AS cnt_sc,
+    sum(score) AS sum_sc
+FROM 
+    sc AS t2,
+    student AS t1
+WHERE t1.sid = t2.sid
+GROUP BY t1.sid;
 
 --Hive中正常运行
-select
+SELECT
     t1.sid,
     t1.sname,
     t2.cnt_sc,
     t2.sum_sc
-from
-    student as t1
-left join(
-    select 
+FROM
+    student AS t1
+LEFT JOIN(
+    SELECT 
         sid,    
-        count(score) as cnt_sc,
-        sum(score) as sum_sc
-    from sc
-    group by sid) as t2
+        COUNT(score) AS cnt_sc,
+        sum(score) AS sum_sc
+    FROM sc
+    GROUP BY sid) AS t2
 ON t1.sid=t2.sid;
 
 -- 4.1 查有成绩的学生信息
 
-select t1.* 
-from student as t1 
-join (select sid from sc group by sid)as t2 
-on t1.sid=t2.sid ;
+SELECT t1.* 
+FROM student AS t1 
+JOIN (SELECT sid FROM sc GROUP BY sid)AS t2 
+ON t1.sid=t2.sid ;
 
 -- 5. 查询「李」姓老师的数量
 
-select count(1) from teacher where tname like "李%";
+SELECT COUNT(1) FROM teacher WHERE tname like "李%";
 
 -- 6. 查询学过「张三」老师授课的同学的信息
 
-select t3.* from (  --找这些同学的信息
-    select t2.sid  -- 找修过张三老师的课的同学学号
-    from (select cid -- 找张三老师的讲授课程编号
-        from course as t2 
-        join(select tid -- 找张三老师的教师编号
-            from teacher 
-            where tname="张三")as t1  
-            on t1.tid=t2.tid) as t1 
-    join sc as t2 
-    on t1.cid=t2.cid
-)as t4 
-join student as t3 
-on t3.sid=t4.sid;
+SELECT t3.* FROM (  --找这些同学的信息
+    SELECT t2.sid  -- 找修过张三老师的课的同学学号
+    FROM (SELECT cid -- 找张三老师的讲授课程编号
+        FROM course AS t2 
+        JOIN(SELECT tid -- 找张三老师的教师编号
+            FROM teacher 
+            WHERE tname="张三")AS t1  
+            ON t1.tid=t2.tid) AS t1 
+    JOIN sc AS t2 
+    ON t1.cid=t2.cid
+)AS t4 
+JOIN student AS t3 
+ON t3.sid=t4.sid;
 
 
 
 
 -- 7. 查询没有学全所有课程的同学的信息
 
--- MySQL中正常跑
-select -- 查询这些同学的信息
+-- MySQL和Hive都正常跑:
+SELECT -- 查询这些同学的信息
     t1.*,
     t2.cnt_course
-from student as t1 
-left join (select -- 查询有成绩的学生学的科目
+FROM student AS t1 
+LEFT JOIN (SELECT -- 查询有成绩的学生学的科目
                 sid,
-                count(1) as cnt_course 
-            from sc 
-            group by sid) as t2 
-on t1.sid=t2.sid
-where t2.cnt_course<3; -- 查询所有科目数
+                COUNT(1) AS cnt_course 
+            FROM sc 
+            GROUP BY sid) AS t2  
+ON t1.sid=t2.sid
+JOIN (SELECT COUNT(1) cnt_c FROM course) t3
+ON 1=1
+WHERE t2.cnt_course<t3.cnt_c -- 查询所有科目数
+OR t2.cnt_course IS NULL; -- 查询没修过课的同学
 
--- Hive中正常跑
-select 
+-- Hive中正常跑1:
+SELECT 
     t3.*
-from student as t3
-left join(select 
+FROM student AS t3
+LEFT JOIN(SELECT 
             sid,
-            count(1) as cnt_c
-          from sc 
-          group by sid) as t2
-on t3.sid=t2.sid
-join (select count(1) as n1 from course) t1
-on t1.n1=t2.cnt_c
-where t2.sid is null;
+            COUNT(1) AS cnt_c
+          FROM sc 
+          GROUP BY sid) AS t2
+ON t3.sid=t2.sid
+JOIN (SELECT COUNT(1) AS n1 FROM course) t1
+ON t1.n1=t2.cnt_c
+WHERE t2.sid is null;
 
 -- 8. 查询至少有一门课与学号为" 01 "的同学所学相同的同学的信息
 
@@ -189,9 +192,9 @@ where t2.sid is null;
 -- 
 -- 要求输出课程号和选修人数，查询结果按人数降序排列，若人数相同，按课程号升序排列
 -- 
--- 15. 按各科成绩进行排序，并显示排名， Score 重复时保留名次空缺
+-- 15. 按各科成绩进行排序，并显示排名， score 重复时保留名次空缺
 -- 
--- 15.1 按各科成绩进行排序，并显示排名， Score 重复时合并名次
+-- 15.1 按各科成绩进行排序，并显示排名， score 重复时合并名次
 -- 
 -- 16. 查询学生的总成绩，并进行排名，总分重复时保留名次空缺
 -- 

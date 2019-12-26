@@ -174,10 +174,51 @@ WHERE t2.sid is null;
 
 -- 8. 查询至少有一门课与学号为" 01 "的同学所学相同的同学的信息
 
--- 9. 查询和" 01 "号的同学学习的课程 完全相同的其他同学的信息
--- 
+select cid from sc where sid ="01";
+select 
+    t3.*,
+    t4.cnt 
+from student AS t3 
+join(
+    select sid,
+    count(1) as cnt 
+    from sc as t1 
+    join (select cid 
+          from sc 
+          where sid ="01") as t2 
+    on t1.cid = t2.cid 
+    group by sid 
+    having cnt>0) as t4 
+on t3.sid=t4.sid;
+
+-- 在mysql中可以，但是在Hive中不能运行
+select t2.* 
+from 
+    sc as t1,
+    student as t2 
+where cid in (select cid from sc where sid ="01") 
+and  t1.sid =t2.sid 
+group by t1.sid;
+
+-- 9. 查询和"01"号的同学学习的课程 完全相同的其他同学的信息
+
+select
+    t1.*
+from student AS t1
+join(SELECT  -- 查询每个同学 与01同学修的课程相同 的门数
+        t2.sid,
+        COUNT(1) AS cnt 
+    FROM sc AS t2
+    LEFT JOIN (SELECT sid,cid FROM sc WHERE sid="01") AS t3 -- 查询01同学修的课程是哪些
+    ON t2.cid=t3.cid
+    GROUP BY t2.sid
+    )AS t4
+on t1.sid=t4.sid and t1.sid<>01
+join (SELECT COUNT(1) as cnt01 FROM sc WHERE sid ="01") as t5 -- 如果和我修的课程相同的门数等于我所修的课程数，那么他就与我修的课程完全相同
+on t5.cnt01=t4.cnt;
+
 -- 10. 查询没学过"张三"老师讲授的任一门课程的学生姓名
--- 
+
 -- 11. 查询两门及其以上不及格课程的同学的学号，姓名及其平均成绩
 -- 
 -- 12. 检索" 01 "课程分数小于 60，按分数降序排列的学生信息

@@ -137,9 +137,6 @@ SELECT t3.* FROM (  --找这些同学的信息
 JOIN student AS t3 
 ON t3.sid=t4.sid;
 
-
-
-
 -- 7. 查询没有学全所有课程的同学的信息
 
 -- MySQL和Hive都正常跑:

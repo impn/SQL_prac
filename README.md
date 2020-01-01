@@ -1,15 +1,10 @@
-# Dalily_learning
+# Alle_Talente
 
-#### 介绍
-汇总每天的学习进度
+#### Introduction
+This is a great project , everyone here is talented.
 
+#### installation
 
-#### 安装教程
-
-1.  git clone https://gitee.com/mpn/dalily_learning.git
-
-#### 使用说明
-
-1.  目的是为了自我监督每天的学习，一个人走的快，但是需要坚持。
-2.  加油
-
+1. git clone git@github.com:impn/Alle_Talente.git
+2. mkdir username
+3. just do it
